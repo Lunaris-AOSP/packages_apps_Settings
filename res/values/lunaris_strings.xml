@@ -304,4 +304,8 @@
     <string name="lunaris_processor_code_message">Chicken Nuggets® 52</string>
     <string name="lunaris_battery_type_message">15000 mAh</string>
     <string name="lunaris_screen_message">Cathode Ray Tube 24hz</string>
+    
+    <!-- Pocket mode -->
+    <string name="proximity_wake_title">Pocket mode</string>
+    <string name="proximity_wake_summary">Check the proximity sensor prior to waking up screen</string>
 </resources>

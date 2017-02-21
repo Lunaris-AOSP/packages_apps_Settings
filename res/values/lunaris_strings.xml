@@ -335,4 +335,9 @@
     <string name="lunaris_processor_code_message">Snapdragon® 8+ Gen 1</string>
     <string name="lunaris_battery_type_message">4700 mAh</string>
     <string name="lunaris_screen_message">Amoled LTPO 120hz</string>
+    
+    
+    <!-- Pocket mode -->
+    <string name="proximity_wake_title">Prevent accidental wake-up</string>
+    <string name="proximity_wake_summary">Check the proximity sensor prior to waking up screen</string>
 </resources>

@@ -21,6 +21,16 @@
     android:key="top_level_settings">
 
     <com.android.settings.widget.HomepagePreference
+        android:fragment="org.lunaris.settings.LunarisSettings"
+        android:icon="@drawable/ic_settings_lunaris_filled"
+        android:key="top_level_lunaris"
+        android:order="-160"
+        android:title="@string/lunaris_dashboard_title"
+        android:summary="@string/lunaris_dashboard_summary"
+        settings:highlightableMenuKey="@string/menu_key_lunaris"
+        settings:controller="org.lunaris.settings.TopLevelLunarisSettingsPreferenceController"/>
+
+    <com.android.settings.widget.HomepagePreference
         android:fragment="com.android.settings.network.NetworkDashboardFragment"
         android:icon="@drawable/ic_settings_wireless"
         android:key="top_level_network"

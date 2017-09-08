@@ -5771,5 +5771,28 @@
         </activity>
 
         <!-- This is the longest AndroidManifest.xml ever. -->
+
+        <!-- The Singularity -->
+        <activity android:name="Settings$LunarisSettingsActivity"
+                  android:label="@string/lunaris_dashboard_title"
+                  android:exported="true">
+            <intent-filter android:priority="1">
+                <action android:name="org.lunaris.settings.LunaisSettings" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.android.settings.SHORTCUT" />
+            </intent-filter>
+            <meta-data android:name="com.android.settings.order" android:value="-1"/>
+            <meta-data android:name="com.android.settings.summary"
+                       android:resource="@string/lunaris_dashboard_summary"/>
+            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
+                       android:value="org.lunaris.settings.LunarisSettings" />
+            <meta-data android:name="com.android.settings.HIGHLIGHT_MENU_KEY"
+                       android:value="@string/menu_key_lunaris"/>
+            <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
+                       android:value="true" />
+        </activity>
     </application>
 </manifest>

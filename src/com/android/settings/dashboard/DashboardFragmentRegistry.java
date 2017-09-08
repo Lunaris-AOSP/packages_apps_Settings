@@ -51,6 +51,8 @@ import com.android.settings.supervision.SupervisionDashboardFragment;
 import com.android.settings.system.SystemDashboardFragment;
 import com.android.settingslib.drawer.CategoryKey;
 
+import org.lunaris.settings.LunarisSettings;
+
 import java.util.Map;
 
 /**
@@ -74,8 +76,10 @@ public class DashboardFragmentRegistry {
         PARENT_TO_CATEGORY_KEY_MAP = new ArrayMap<>();
         PARENT_TO_CATEGORY_KEY_MAP.put(TopLevelSettings.class.getName(),
                 CategoryKey.CATEGORY_HOMEPAGE);
-        PARENT_TO_CATEGORY_KEY_MAP.put(
-                NetworkDashboardFragment.class.getName(), CategoryKey.CATEGORY_NETWORK);
+        PARENT_TO_CATEGORY_KEY_MAP.put(LunarisSettings.class.getName(),
+                CategoryKey.CATEGORY_LUNARIS);
+        PARENT_TO_CATEGORY_KEY_MAP.put(NetworkDashboardFragment.class.getName(),
+                CategoryKey.CATEGORY_NETWORK);
         PARENT_TO_CATEGORY_KEY_MAP.put(ConnectedDeviceDashboardFragment.class.getName(),
                 CategoryKey.CATEGORY_CONNECT);
         PARENT_TO_CATEGORY_KEY_MAP.put(AdvancedConnectedDeviceDashboardFragment.class.getName(),
@@ -135,6 +139,8 @@ public class DashboardFragmentRegistry {
                 CategoryKey.CATEGORY_MORE_SECURITY_PRIVACY_SETTINGS);
         PARENT_TO_CATEGORY_KEY_MAP.put(SupervisionDashboardFragment.class.getName(),
                 CategoryKey.CATEGORY_SUPERVISION);
+        PARENT_TO_CATEGORY_KEY_MAP.put(LunarisSettings.class.getName(),
+                CategoryKey.CATEGORY_LUNARIS);
 
         CATEGORY_KEY_TO_PARENT_MAP = new ArrayMap<>(PARENT_TO_CATEGORY_KEY_MAP.size());
 

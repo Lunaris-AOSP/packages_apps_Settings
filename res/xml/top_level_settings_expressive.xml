@@ -23,6 +23,16 @@
     <com.android.settingslib.widget.UntitledPreferenceCategory
         android:order="-130"
         android:key="top_level_connectivity_category">
+
+        <com.android.settings.widget.HomepagePreference
+            android:fragment="org.lunaris.settings.LunarisSettings"
+            android:icon="@drawable/ic_settings_lunaris_filled"
+            android:key="top_level_lunaris"
+            android:order="-10"
+            android:title="@string/lunaris_dashboard_title"
+            android:summary="@string/lunaris_dashboard_summary"
+            settings:controller="org.lunaris.settings.TopLevelLunarisSettingsPreferenceController"/>
+            
         <com.android.settings.widget.HomepagePreference
             android:fragment="com.android.settings.network.NetworkDashboardFragment"
             android:icon="@drawable/ic_homepage_network"
@@ -47,14 +57,6 @@
     <com.android.settingslib.widget.UntitledPreferenceCategory
         android:order="-120"
         android:key="top_level_personalize_category">
-        <com.android.settings.widget.HomepagePreference
-            android:fragment="com.android.settings.applications.AppDashboardFragment"
-            android:icon="@drawable/ic_homepage_apps"
-            android:key="top_level_apps"
-            android:order="-60"
-            android:title="@string/apps_dashboard_title"
-            android:summary="@string/app_and_notification_dashboard_summary"
-            settings:highlightableMenuKey="@string/menu_key_apps"/>
 
         <com.android.settings.widget.HomepagePreference
             android:fragment="com.android.settings.notification.ConfigureNotificationSettings"
@@ -118,6 +120,16 @@
         android:order="-110"
         android:key="top_level_system_info_category"
         android:layout="@layout/settingslib_expressive_untitled_preference_category">
+
+        <com.android.settings.widget.HomepagePreference
+            android:fragment="com.android.settings.applications.AppDashboardFragment"
+            android:icon="@drawable/ic_homepage_apps"
+            android:key="top_level_apps"
+            android:order="-60"
+            android:title="@string/apps_dashboard_title"
+            android:summary="@string/app_and_notification_dashboard_summary"
+            settings:highlightableMenuKey="@string/menu_key_apps"/>
+
         <com.android.settings.widget.HomepagePreference
             android:fragment="com.android.settings.deviceinfo.StorageDashboardFragment"
             android:icon="@drawable/ic_homepage_storage"

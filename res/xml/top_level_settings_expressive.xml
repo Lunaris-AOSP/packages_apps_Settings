@@ -21,9 +21,25 @@
     android:key="top_level_settings">
 
     <PreferenceCategory
-        android:order="-140"
+        android:order="-150"
         android:key="top_level_account_category"
         android:layout="@layout/settingslib_preference_category_no_title">
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:order="-140"
+        android:key="top_level_lunaris_category"
+        android:layout="@layout/settingslib_preference_category_no_title">
+
+        <com.android.settings.widget.HomepagePreference
+            android:fragment="org.lunaris.settings.LunarisSettings"
+            android:icon="@drawable/ic_settings_lunaris_filled"
+            android:key="top_level_lunaris"
+            android:order="-160"
+            android:title="@string/lunaris_dashboard_title"
+            android:summary="@string/lunaris_dashboard_summary"
+            settings:highlightableMenuKey="@string/menu_key_lunaris"
+            settings:controller="org.lunaris.settings.TopLevelLunarisSettingsPreferenceController"/>
     </PreferenceCategory>
 
     <PreferenceCategory

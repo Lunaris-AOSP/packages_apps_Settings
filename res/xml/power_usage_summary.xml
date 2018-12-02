@@ -88,6 +88,13 @@
         settings:controller="com.android.settings.fuelgauge.ChargingSpeedPreferenceController"
         settings:requiresService="lineagehealth" />
 
+    <!-- Charging sound -->
+    <Preference
+        android:key="battery_charge_sound"
+        android:title="@string/notification_battery_charge_level_title"
+        android:summary="@string/notification_battery_charge_level_summary"
+        android:fragment="com.android.settings.fuelgauge.BatteryChargeSoundSettings" />
+
     <!-- Battery light -->
     <lineageos.preference.LineagePartsPreference
         android:key="battery_lights"

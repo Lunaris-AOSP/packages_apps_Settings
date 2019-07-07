@@ -225,6 +225,7 @@ import com.android.settings.wifi.savedaccesspoints2.SavedAccessPointsWifiSetting
 import com.android.settings.wifi.tether.WifiTetherSettings;
 
 import org.lunaris.settings.LunarisSettings;
+import org.lunaris.settings.fragments.themes.SmartPixels;
 
 public class SettingsGateway {
 
@@ -439,6 +440,7 @@ public class SettingsGateway {
             SafetyCenterFragment.class.getName(),
             LunarisSettings.class.getName(),
             RunningServices.class.getName(),
+            SmartPixels.class.getName(),
     };
 
     public static final String[] SETTINGS_FOR_RESTRICTED = {
@@ -489,5 +491,6 @@ public class SettingsGateway {
             Settings.ShadeSettingsActivity.class.getName(),
             Settings.LunarisSettingsActivity.class.getName(),
             Settings.DevRunningServicesActivity.class.getName(),
+            Settings.SmartPixelsActivity.class.getName(),
     };
 }

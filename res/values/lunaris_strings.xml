@@ -215,4 +215,8 @@
     <string name="reset_auto_brightness_adjustment_title">Reset preference</string>
     <string name="reset_auto_brightness_adjustment_summary">Let the system forget your brightness preference and reset it to the default one</string>
     <string name="reset_auto_brightness_adjustment_done">Auto brightness preference has been reset</string>
+
+    <!-- Pulse on music track change -->
+    <string name="pulse_on_new_tracks_title">Music ticker</string>
+    <string name="pulse_on_new_tracks_summary">Show Ambient Display when a new music track is played</string>
 </resources>

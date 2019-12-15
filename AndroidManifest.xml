@@ -155,6 +155,8 @@
     <!-- App lock -->
     <uses-permission android:name="android.permission.MANAGE_APP_LOCK" />
 
+    <protected-broadcast android:name="com.android.systemui.doze.pulse" />
+
     <application
             android:name=".SettingsApplication"
             android:label="@string/settings_label"
@@ -6165,6 +6167,31 @@
             <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
                 android:value="org.lunaris.settings.fragments.themes.SmartPixels" />
         </activity>
+
+        <activity android:name="org.lunaris.settings.fragments.themes.DisplayCutoutForceFullscreenActivity"
+                android:label="@string/display_cutout_force_fullscreen_title"
+                android:theme="@style/Theme.SubSettingsBase"
+                android:enabled="true"
+                android:exported="true"
+                android:taskAffinity="com.android.settings"
+                android:parentActivityName="Settings">
+            <intent-filter android:priority="70">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name="org.lunaris.settings.fragments.themes.doze.DozeReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <service android:name="org.lunaris.settings.fragments.themes.doze.DozeService"
+                android:exported="true"
+                android:permission="LunarisDozeService">
+        </service>
 
     </application>
 </manifest>

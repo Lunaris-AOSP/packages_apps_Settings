@@ -169,6 +169,14 @@
         settings:controller="com.android.settings.sound.MediaControlsParentPreferenceController"
         settings:keywords="@string/keywords_media_controls"/>
 
+    <!-- Adaptive Playback -->
+    <Preference
+        android:key="adaptive_playback_settings"
+        android:order="-95"
+        android:title="@string/adaptive_playback_title"
+        android:summary="@string/adaptive_playback_summary"
+        android:fragment="com.android.settings.sound.AdaptivePlayback" />
+
     <!-- Also vibration -->
     <Preference
         android:fragment="com.android.settings.accessibility.VibrationSettings"

@@ -21,9 +21,34 @@
     android:title="@string/color_mode_title">
 
     <PreferenceCategory
+        android:key="color_balance_category"
+        android:title="@string/color_mode_balance_category"
+        android:order="100">
+
+        <com.android.settings.widget.SeekBarPreference
+            android:key="color_balance_red"
+            android:title="@string/color_mode_balance_red"
+            settings:keywords="@string/keywords_color_balance"
+            settings:controller="com.android.settings.display.ColorBalancePreferenceController" />
+
+        <com.android.settings.widget.SeekBarPreference
+            android:key="color_balance_green"
+            android:title="@string/color_mode_balance_green"
+            settings:keywords="@string/keywords_color_balance"
+            settings:controller="com.android.settings.display.ColorBalancePreferenceController" />
+
+        <com.android.settings.widget.SeekBarPreference
+            android:key="color_balance_blue"
+            android:title="@string/color_mode_balance_blue"
+            settings:keywords="@string/keywords_color_balance"
+            settings:controller="com.android.settings.display.ColorBalancePreferenceController" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="display_engine_category"
         android:title="@string/display_engine_category"
-        android:order="100">
+        android:order="200">
 
         <org.lunaris.settings.preferences.SecureSettingListPreference
             android:key="display_engine_mode"

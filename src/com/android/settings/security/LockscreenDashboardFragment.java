@@ -39,6 +39,7 @@ import com.android.settings.R;
 import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.display.AmbientDisplayAlwaysOnPreferenceController;
 import com.android.settings.display.AmbientDisplayNotificationsPreferenceController;
+import com.android.settings.display.AODSchedulePreferenceController;
 import com.android.settings.gestures.DoubleTapScreenPreferenceController;
 import com.android.settings.gestures.PickupGesturePreferenceController;
 import com.android.settings.notification.LockScreenNotificationPreferenceController;
@@ -51,7 +52,7 @@ import com.android.settingslib.search.SearchIndexable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.evolution.settings.utils.DeviceUtils;
+import org.lunaris.settings.utils.DeviceUtils;
 
 /**
  * Settings screen for lock screen preference
@@ -59,7 +60,6 @@ import org.evolution.settings.utils.DeviceUtils;
 @SearchIndexable
 public class LockscreenDashboardFragment extends DashboardFragment
         implements OwnerInfoPreferenceController.OwnerInfoCallback {
-
     private static final String TAG = "LockscreenDashboardFragment";
 
     @VisibleForTesting
@@ -133,6 +133,7 @@ public class LockscreenDashboardFragment extends DashboardFragment
         use(AmbientDisplayNotificationsPreferenceController.class).setConfig(getConfig(context));
         use(DoubleTapScreenPreferenceController.class).setConfig(getConfig(context));
         use(PickupGesturePreferenceController.class).setConfig(getConfig(context));
+        use(AODSchedulePreferenceController.class).setConfig(getConfig(context));
 
         mControlsContentObserver = new ContentObserver(
                 new Handler(Looper.getMainLooper())) {

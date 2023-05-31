@@ -238,6 +238,4 @@
         android:fragment="com.android.settings.security.MemtagPage"
         settings:controller="com.android.settings.security.MemtagPagePreferenceController" />
 
-
-
 </PreferenceScreen>

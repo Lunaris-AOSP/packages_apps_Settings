@@ -45,4 +45,8 @@
     <!-- Label for showing hidden apps in list [CHAR LIMIT=40] -->
     <string name="filter_hidden_apps">Hidden apps</string>
 
+    <!-- wake gestures haptics -->
+    <string name="doze_gesture_vibrate_title">Haptic Feedback</string>
+    <string name="doze_gesture_vibrate_summary">Vibrate when this gesture is invoked</string>
+
 </resources>

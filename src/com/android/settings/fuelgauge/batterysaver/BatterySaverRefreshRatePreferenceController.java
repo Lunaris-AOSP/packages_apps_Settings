@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2021 WaveOS
+ * Copyright (C) 2023-2024 Nameless-AOSP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +17,62 @@
 
 package com.android.settings.fuelgauge.batterysaver;
 
-import static android.provider.Settings.System.LOW_POWER_REFRESH_RATE;
+import static android.provider.Settings.Global.LOW_POWER_REFRESH_RATE;
+import static android.provider.Settings.System.EXTREME_REFRESH_RATE;
 
 import android.content.Context;
+import android.os.UserHandle;
 import android.provider.Settings;
+
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreferenceCompat;
+
+import com.android.internal.util.neoteric.DisplayRefreshRateHelper;
 
 import com.android.settings.R;
 import com.android.settings.core.TogglePreferenceController;
 
 public class BatterySaverRefreshRatePreferenceController extends TogglePreferenceController {
 
+    private final DisplayRefreshRateHelper mHelper;
+
+    private SwitchPreferenceCompat mPreference;
+
     public BatterySaverRefreshRatePreferenceController(Context context, String key) {
         super(context, key);
+        mHelper = DisplayRefreshRateHelper.getInstance(context);
+    }
+
+    @Override
+    public void displayPreference(PreferenceScreen screen) {
+        super.displayPreference(screen);
+
+        final boolean extremeRefreshRateEnabled =
+                Settings.System.getIntForUser(mContext.getContentResolver(),
+                EXTREME_REFRESH_RATE, 0, UserHandle.USER_CURRENT) == 1;
+        mPreference = screen.findPreference(getPreferenceKey());
+        mPreference.setSummary(extremeRefreshRateEnabled ?
+                R.string.battery_saver_refresh_rate_disabled_summary :
+                R.string.battery_saver_refresh_rate_summary);
+        mPreference.setEnabled(!extremeRefreshRateEnabled);
     }
 
     @Override
     public boolean isChecked() {
-        int val = Settings.System.getInt(mContext.getContentResolver(), LOW_POWER_REFRESH_RATE, 1);
-        return val == 1;
+        return Settings.Global.getInt(mContext.getContentResolver(),
+                LOW_POWER_REFRESH_RATE, 1) == 1;
     }
 
     @Override
     public boolean setChecked(boolean isChecked) {
-        int val = isChecked ? 1 : 0;
-        return Settings.System.putInt(mContext.getContentResolver(), LOW_POWER_REFRESH_RATE, val);
+        return Settings.Global.putInt(mContext.getContentResolver(),
+                LOW_POWER_REFRESH_RATE, isChecked ? 1 : 0);
     }
 
     @Override
     public int getAvailabilityStatus() {
-        return mContext.getResources().getBoolean(R.bool.config_show_min_refresh_rate_switch) ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
+        return mHelper.getSupportedRefreshRateList().size() > 1
+                        ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
     }
 
     @Override

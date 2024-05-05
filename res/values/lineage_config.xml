@@ -58,4 +58,7 @@
     
     <!-- Battery Info: mAh -->
     <integer name="config_battery_divider" translatable="false">1000</integer>
+
+    <!-- Device specific doze package -->
+    <string name="config_customDozePackage" translatable="false"></string>
 </resources>

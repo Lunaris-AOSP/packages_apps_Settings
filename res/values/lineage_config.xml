@@ -49,4 +49,7 @@
 
     <!-- Battery Info: mAh -->
     <integer name="config_battery_divider" translatable="false">1000</integer>
+
+    <!-- Whether to show volume steps settings -->
+    <bool name="config_supports_volume_steps" translatable="false">true</bool>
 </resources>

@@ -65,4 +65,7 @@
 
     <!-- Device specific doze package -->
     <string name="config_customDozePackage" translatable="false"></string>
+
+    <!-- Whether to show vendor security patch level -->
+    <bool name="config_show_vendor_patch_level" translatable="false">true</bool>
 </resources>

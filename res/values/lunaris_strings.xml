@@ -298,4 +298,7 @@
     <string name="hdr_display_title">HDR Display</string>
     <string name="hdr_display_summary">Enable peak brightness for HDR content. This will increase battery usage</string>
     <string name="hdr_max_brightness_percent_title">HDR Display intensity</string>
+
+    <!-- Wifi Display settings. The title of a menu item to disable mirroring confimration [CHAR LIMIT=40] -->
+    <string name="mirroring_confirmation_disable_menu_item">Disable mirroring confirmation</string>
 </resources>

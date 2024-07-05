@@ -76,4 +76,7 @@
     <!-- Circle to search -->
     <string name="search_all_entrypoints_enabled_title">Circle to Search</string>
     <string name="search_all_entrypoints_enabled_summary">Use CTS instead of Google Lens for navbar long press</string>
+
+    <!-- Wifi Display settings. The title of a menu item to disable mirroring confimration [CHAR LIMIT=40] -->
+    <string name="mirroring_confirmation_disable_menu_item">Disable mirroring confirmation</string>
 </resources>

@@ -41,6 +41,32 @@
             app:keywords="@string/keywords_ramping_ringer_vibration"
             app:controller="com.android.settings.accessibility.VibrationRampingRingerTogglePreferenceController"/>
 
+        <org.lunaris.settings.preferences.SystemSettingSwitchPreference
+            android:key="ramping_ringer_no_silence"
+            android:title="@string/ramping_ringer_no_silence_title"
+            android:summaryOn="@string/ramping_ringer_no_silence_summary_on"
+            android:summaryOff="@string/ramping_ringer_no_silence_summary_off"
+            android:defaultValue="false" />
+
+        <org.lunaris.settings.preferences.SystemSettingSeekBarPreference
+            android:key="ramping_ringer_duration"
+            android:title="@string/ramping_ringer_duration_title"
+            android:summary="@string/ramping_ringer_duration_summary"
+            android:max="20"
+            android:min="2"
+            android:defaultValue="10"
+            app:units="@string/unit_seconds" />
+
+        <org.lunaris.settings.preferences.SystemSettingSeekBarPreference
+            android:key="ramping_ringer_start_volume"
+            android:title="@string/ramping_ringer_start_volume_title"
+            android:summary="@string/ramping_ringer_start_volume_summary"
+            android:max="90"
+            android:min="0"
+            android:defaultValue="0"
+            app:interval="5"
+            app:units="%" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -62,6 +62,9 @@ public class VibrationRampingRingerTogglePreferenceController
     private final VibrationPreferenceConfig.SettingObserver mRingSettingObserver;
 
     private Preference mPreference;
+    private Preference mDurationPreference;
+    private Preference mVolumePreference;
+    private Preference mSilencePreference;
 
     public VibrationRampingRingerTogglePreferenceController(Context context, String preferenceKey) {
         this(context, preferenceKey, new DeviceConfigProvider());
@@ -114,6 +117,16 @@ public class VibrationRampingRingerTogglePreferenceController
         mPreference = screen.findPreference(getPreferenceKey());
         mRingSettingObserver.onDisplayPreference(this, mPreference);
         mPreference.setEnabled(isRingVibrationEnabled());
+        mDurationPreference = screen.findPreference(
+                Settings.System.RAMPING_RINGER_DURATION);
+        mVolumePreference = screen.findPreference(
+                Settings.System.RAMPING_RINGER_START_VOLUME);
+        mSilencePreference = screen.findPreference(
+                Settings.System.RAMPING_RINGER_NO_SILENCE);
+        final boolean checked = isChecked();
+        mDurationPreference.setVisible(checked);
+        mVolumePreference.setVisible(checked);
+        mSilencePreference.setVisible(checked);
     }
 
     @Override
@@ -133,6 +146,9 @@ public class VibrationRampingRingerTogglePreferenceController
                 mRingVibrationPreferenceConfig.playVibrationPreview();
             }
         }
+        mDurationPreference.setVisible(isChecked);
+        mVolumePreference.setVisible(isChecked);
+        mSilencePreference.setVisible(isChecked);
         return true;
     }
 

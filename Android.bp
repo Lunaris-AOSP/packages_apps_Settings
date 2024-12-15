@@ -122,6 +122,7 @@ android_library {
         "org.lineageos.platform.internal",
         "LineagePreferenceLib",
         "vendor.lineage.fastcharge-V1.0-java",
+        "androidx.room_room-runtime",
     ],
 
     plugins: [

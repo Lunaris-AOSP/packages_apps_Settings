@@ -10,11 +10,11 @@ import com.android.settings.overlay.FeatureFactory;
 public class AccountFeatureProviderImpl implements AccountFeatureProvider {
     @Override
     public String getAccountType() {
-        return FeatureFactory.getAppContext().getString(R.string.account_type);
+        return "com.google";
     }
 
     @Override
     public Account[] getAccounts(Context context) {
-        return AccountManager.get(context).getAccountsByType(getAccountType());
+        return AccountManager.get(context).getAccountsByType("com.google");
     }
 }

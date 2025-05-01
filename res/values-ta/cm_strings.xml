@@ -63,10 +63,10 @@
     <string name="fingerprint_enroll_touch_dialog_message_side" product="default">உமது செல்பேசி ஓரத்தில் உணரியைத் தொடுக.</string>
     <string name="app_notification_sound_timeout_value_10_seconds">10 நொடி</string>
     <string name="app_notification_sound_timeout_value_30_seconds">30 நொடி</string>
-    <string name="app_notification_sound_timeout_value_1_minute">1 நுணுத்தம்</string>
-    <string name="app_notification_sound_timeout_value_5_minutes">5 நுணுத்தம்</string>
-    <string name="app_notification_sound_timeout_value_15_minutes">15 நுணுத்தம்</string>
-    <string name="app_notification_sound_timeout_value_30_minutes">30 நுணுத்தம்</string>
+    <string name="app_notification_sound_timeout_value_1_minute">1 நிமிடம்</string>
+    <string name="app_notification_sound_timeout_value_5_minutes">5 நிமிடம்</string>
+    <string name="app_notification_sound_timeout_value_15_minutes">15 நிமிடம்</string>
+    <string name="app_notification_sound_timeout_value_30_minutes">30 நிமிடம்</string>
     <string name="unlock_scramble_pin_layout_title">கலரீடு தளவமைப்பு</string>
     <string name="unlock_scramble_pin_layout_summary">கருவியைத் திறக்கும்போது PIN தளவமைப்பைக் கலரீடுக</string>
     <string name="proximity_wake_title">தற்செயலான விழித்தலை தடு</string>

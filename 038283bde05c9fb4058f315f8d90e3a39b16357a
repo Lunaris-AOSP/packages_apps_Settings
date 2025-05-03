@@ -16,6 +16,24 @@
       "message": "This gives compilation errors for cedric.\nBuild completes by reverting this only commit.\nAm I missing something?\n\npackages/apps/Settings/src/com/android/settings/accounts/AccountTypePreferenceLoader.java:47: error: a type with the same simple name is already defined by the single-type-import of VisibleForTesting\nimport com.android.internal.annotations.VisibleForTesting;\n^\npackages/apps/Settings/src/com/android/settings/search/SearchFeatureProviderImpl.java:29: error: cannot find symbol\nimport com.android.settingslib.search.SearchIndexableResourcesMobile;\n                                     ^\n  symbol:   class SearchIndexableResourcesMobile\n  location: package com.android.settingslib.search\npackages/apps/Settings/src/com/android/settings/accounts/AccountTypePreferenceLoader.java:205: error: reference to VisibleForTesting is ambiguous\n    @VisibleForTesting\n     ^\n  both class androidx.annotation.VisibleForTesting in androidx.annotation and class com.android.internal.annotations.VisibleForTesting in com.android.internal.annotations match\npackages/apps/Settings/src/com/android/settings/accounts/AccountTypePreferenceLoader.java:227: error: reference to VisibleForTesting is ambiguous\n    @VisibleForTesting\n     ^\n  both class androidx.annotation.VisibleForTesting in androidx.annotation and class com.android.internal.annotations.VisibleForTesting in com.android.internal.annotations match\npackages/apps/Settings/src/com/android/settings/accounts/AccountTypePreferenceLoader.java:251: error: reference to VisibleForTesting is ambiguous\n    @VisibleForTesting\n     ^\n  both class androidx.annotation.VisibleForTesting in androidx.annotation and class com.android.internal.annotations.VisibleForTesting in com.android.internal.annotations match\npackages/apps/Settings/src/com/android/settings/search/SearchFeatureProviderImpl.java:58: error: cannot find symbol\n            mSearchIndexableResources \u003d new SearchIndexableResourcesMobile();\n                                            ^\n  symbol:   class SearchIndexableResourcesMobile\n  location: class SearchFeatureProviderImpl\n6 errors\n[ 98% 46032/46842] Target Java: /run/media/matiasarc/223EXT4/android/lineage-17.1/target/common/obj/APPS/Dialer_intermediates/classes-full-debug.jar",
       "revId": "038283bde05c9fb4058f315f8d90e3a39b16357a",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "370e6b1e_d9e3d701",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 20587
+      },
+      "writtenOn": "2025-05-03T08:57:18Z",
+      "side": 1,
+      "message": "Likely caused by an error applying the patch. The line numbers don\u0027t match the patch so the 2nd import must be introduced by another patch. The 2nd error is in a file not touched by this patch so it can\u0027t be the cause for that.\nSo double check the other patches applied. Maybe they are applied in the wrong order causing conflicts not resolved in the expected way",
+      "parentUuid": "dd3a7c63_08b2af58",
+      "revId": "038283bde05c9fb4058f315f8d90e3a39b16357a",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }

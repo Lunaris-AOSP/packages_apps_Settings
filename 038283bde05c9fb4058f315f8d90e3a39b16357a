@@ -52,6 +52,24 @@
       "parentUuid": "370e6b1e_d9e3d701",
       "revId": "038283bde05c9fb4058f315f8d90e3a39b16357a",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a96b829b_6ae56207",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 20587
+      },
+      "writtenOn": "2025-05-04T19:15:05Z",
+      "side": 1,
+      "message": "This seems to be a conflict with https://review.lineageos.org/c/LineageOS/android_packages_apps_Settings/+/403304\nI\u0027ll have to check what broke the relation chain",
+      "parentUuid": "807cddd5_9f407be5",
+      "revId": "038283bde05c9fb4058f315f8d90e3a39b16357a",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }

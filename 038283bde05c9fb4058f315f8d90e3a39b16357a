@@ -70,6 +70,24 @@
       "parentUuid": "807cddd5_9f407be5",
       "revId": "038283bde05c9fb4058f315f8d90e3a39b16357a",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "734f05fd_d65c1c6d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 20587
+      },
+      "writtenOn": "2025-05-08T16:25:27Z",
+      "side": 1,
+      "message": "Found the issue: ASB 2024-11 was based on lineage-17.1 not on the previous ASB causing the conflict.  Resolved that and now it looks like my local repo which builds.\nYour local files after applying the topics should now look exactly like the files here.",
+      "parentUuid": "a96b829b_6ae56207",
+      "revId": "038283bde05c9fb4058f315f8d90e3a39b16357a",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }

@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37a23979_dff9cd88",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 699,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2025-05-21T19:35:51Z",
+      "side": 1,
+      "message": "Line length",
+      "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af606703_95c0433b",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 766,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2025-05-21T19:35:51Z",
+      "side": 1,
+      "message": "Same",
+      "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "39548980_da8f67db",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 821,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2025-05-21T19:35:51Z",
+      "side": 1,
+      "message": "Same",
+      "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3f257cc_462452b4",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1066,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2025-05-21T19:35:51Z",
+      "side": 1,
+      "message": "Same",
+      "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}

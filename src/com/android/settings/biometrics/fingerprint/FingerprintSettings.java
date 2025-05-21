@@ -37,6 +37,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.hardware.display.AmbientDisplayConfiguration;
 import android.hardware.fingerprint.Fingerprint;
 import android.hardware.fingerprint.FingerprintManager;
 import android.hardware.fingerprint.FingerprintSensorPropertiesInternal;
@@ -299,6 +300,7 @@ public class FingerprintSettings extends SubSettings {
         private PreferenceCategory mFingerprintUnlockFooter;
         private boolean mFingerprintWakeAndUnlock;
         private boolean mProximityCheckOnFingerprintUnlock;
+        private String mUdfpsLongPressSensorType;
 
         private FingerprintManager mFingerprintManager;
         private FingerprintUpdater mFingerprintUpdater;
@@ -480,6 +482,9 @@ public class FingerprintSettings extends SubSettings {
                     org.lineageos.platform.internal.R.bool.config_fingerprintWakeAndUnlock);
             mProximityCheckOnFingerprintUnlock = getContext().getResources().getBoolean(
                     org.lineageos.platform.internal.R.bool.config_proximityCheckOnFpsUnlock);
+
+            AmbientDisplayConfiguration config = new AmbientDisplayConfiguration(getContext());
+            mUdfpsLongPressSensorType = config.udfpsLongPressSensorType();
 
             mToken = getIntent().getByteArrayExtra(
                     ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
@@ -691,7 +696,8 @@ public class FingerprintSettings extends SubSettings {
             // |mRequireScreenOnToAuthPreferenceController.isChecked| is always checking the primary
             // user instead of the user with |mUserId|.
             if ((!isUdfps() && mFingerprintWakeAndUnlock) ||
-                    (screenOffUnlockUdfps() && isUdfps())) {
+                    (screenOffUnlockUdfps() && (isUltrasnoicUdfps() ||
+                        (isUdfps() && !TextUtils.isEmpty(mUdfpsLongPressSensorType))))) {
                 scrollToPreference(fpPrefKey);
                 addFingerprintUnlockCategory();
             }
@@ -758,7 +764,8 @@ public class FingerprintSettings extends SubSettings {
                             restToUnlockPreference.getOnPreferenceChangeListener());
                 }
                 setupFingerprintUnlockCategoryPreferencesForScreenOnToAuth();
-            } else if (screenOffUnlockUdfps() && isUdfps()) {
+            } else if (screenOffUnlockUdfps() && (isUltrasnoicUdfps() ||
+                        (isUdfps() && !TextUtils.isEmpty(mUdfpsLongPressSensorType)))) {
                 setupFingerprintUnlockCategoryPreferencesForScreenOffUnlock();
             }
             if (mFingerprintUnlockCategoryPreferenceController != null) {
@@ -813,7 +820,8 @@ public class FingerprintSettings extends SubSettings {
         private void updatePreferencesAfterFingerprintRemoved() {
             updateAddPreference();
             if ((!isUdfps() && mFingerprintWakeAndUnlock) ||
-                    (screenOffUnlockUdfps() && isUdfps())) {
+                    (screenOffUnlockUdfps() && (isUltrasnoicUdfps() ||
+                            (isUdfps() && !TextUtils.isEmpty(mUdfpsLongPressSensorType))))) {
                 updateFingerprintUnlockCategoryVisibility();
             }
             updatePreferences();
@@ -1058,7 +1066,8 @@ public class FingerprintSettings extends SubSettings {
                     }
 
                 }
-            } else if (screenOffUnlockUdfps() && isUdfps()) {
+            } else if (screenOffUnlockUdfps() && (isUltrasnoicUdfps() ||
+                        (isUdfps() && !TextUtils.isEmpty(mUdfpsLongPressSensorType)))) {
                 for (AbstractPreferenceController controller : controllers) {
                     if (controller.getPreferenceKey() == KEY_FINGERPRINT_UNLOCK_CATEGORY) {
                         mFingerprintUnlockCategoryPreferenceController =

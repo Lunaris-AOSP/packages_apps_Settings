@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "059d81cc_936e9339",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 31604
+      },
+      "writtenOn": "2025-05-22T16:45:42Z",
+      "side": 1,
+      "message": "Ugh. This looks better. My working theory is that I misinterpreted getUidsWithPolicy as only directly comparing rather than checking as a flag. But looking at the code now, I can barely figure it out.\n\nThis looks good to me. I can test it against the bugs these changes were meant to fix, soon.",
+      "revId": "eb77e0de38ebe1e8053dbc514eccfb012971bcaf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}

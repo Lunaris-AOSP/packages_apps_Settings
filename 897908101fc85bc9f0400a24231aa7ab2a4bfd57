@@ -16,6 +16,29 @@
       "message": "Bump",
       "revId": "897908101fc85bc9f0400a24231aa7ab2a4bfd57",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1fbe4a6_311c7b93",
+        "filename": "src/com/android/settings/datausage/DataSaverBackend.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2025-05-22T14:06:21Z",
+      "side": 1,
+      "message": "I\u0027m a bit lost, I can\u0027t find any other flag compared to POLICY_REJECT_METERED_BACKGROUND and POLICY_ALLOW_METERED_BACKGROUND?",
+      "range": {
+        "startLine": 228,
+        "startChar": 0,
+        "endLine": 233,
+        "endChar": 0
+      },
+      "revId": "897908101fc85bc9f0400a24231aa7ab2a4bfd57",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }

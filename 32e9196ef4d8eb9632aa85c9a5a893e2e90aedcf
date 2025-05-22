@@ -18,6 +18,24 @@
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d61ef8d_a05d71b6",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 699,
+      "author": {
+        "id": 31655
+      },
+      "writtenOn": "2025-05-22T16:17:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "37a23979_dff9cd88",
+      "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "af606703_95c0433b",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-05-21T19:35:51Z",
       "side": 1,
       "message": "Same",
+      "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b195a814_6c4884d6",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 766,
+      "author": {
+        "id": 31655
+      },
+      "writtenOn": "2025-05-22T16:17:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af606703_95c0433b",
       "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     },
@@ -52,6 +88,24 @@
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b24c532_60bfa7f3",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 821,
+      "author": {
+        "id": 31655
+      },
+      "writtenOn": "2025-05-22T16:17:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "39548980_da8f67db",
+      "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c3f257cc_462452b4",
@@ -65,6 +119,24 @@
       "writtenOn": "2025-05-21T19:35:51Z",
       "side": 1,
       "message": "Same",
+      "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb906fc9_f3420c40",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1066,
+      "author": {
+        "id": 31655
+      },
+      "writtenOn": "2025-05-22T16:17:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3f257cc_462452b4",
       "revId": "32e9196ef4d8eb9632aa85c9a5a893e2e90aedcf",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }

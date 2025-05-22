@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80479331_d9c9f75c",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 700,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2025-05-22T19:14:20Z",
+      "side": 1,
+      "message": "lacking a proper idea for a name but since this whole check is repeated four times, maybe make it a simple method?",
+      "range": {
+        "startLine": 699,
+        "startChar": 20,
+        "endLine": 700,
+        "endChar": 85
+      },
+      "revId": "9604258e1905cb7dd1b14203ce949af9a398b8e5",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}

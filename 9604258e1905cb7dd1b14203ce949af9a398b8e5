@@ -22,6 +22,30 @@
       },
       "revId": "9604258e1905cb7dd1b14203ce949af9a398b8e5",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5fe6c03c_bb8e939c",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 700,
+      "author": {
+        "id": 31655
+      },
+      "writtenOn": "2025-05-23T17:00:07Z",
+      "side": 1,
+      "message": "Done. If you have a different idea for the method name I\u0027m all ears.",
+      "parentUuid": "80479331_d9c9f75c",
+      "range": {
+        "startLine": 699,
+        "startChar": 20,
+        "endLine": 700,
+        "endChar": 85
+      },
+      "revId": "9604258e1905cb7dd1b14203ce949af9a398b8e5",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4684fce2_ea33353b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 31655
+      },
+      "writtenOn": "2025-06-07T11:29:21Z",
+      "side": 1,
+      "message": "Option for screen off fingerprint disappears on laurel_sprout as it should. I don\u0027t have an ultrasonic device to test or one that implements screen off fingerprint via sensors, so i didn\u0027t test that.",
+      "revId": "0efaae18e837b2f59e815788739230ad0e1863ff",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}

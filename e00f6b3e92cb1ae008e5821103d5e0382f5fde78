@@ -70,6 +70,52 @@
       },
       "revId": "e00f6b3e92cb1ae008e5821103d5e0382f5fde78",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9c546c8_f0043eab",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 710,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2025-06-11T13:45:26Z",
+      "side": 1,
+      "message": "At the very least, don\u0027t move it to this line, to have less git diff when squashed with original change.",
+      "range": {
+        "startLine": 710,
+        "startChar": 60,
+        "endLine": 710,
+        "endChar": 91
+      },
+      "revId": "e00f6b3e92cb1ae008e5821103d5e0382f5fde78",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8b228f1_05027afd",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 831,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2025-06-11T13:45:26Z",
+      "side": 1,
+      "message": "Same here.",
+      "range": {
+        "startLine": 831,
+        "startChar": 60,
+        "endLine": 831,
+        "endChar": 91
+      },
+      "revId": "e00f6b3e92cb1ae008e5821103d5e0382f5fde78",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }

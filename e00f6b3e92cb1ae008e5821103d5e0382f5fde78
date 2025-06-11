@@ -46,6 +46,30 @@
       },
       "revId": "e00f6b3e92cb1ae008e5821103d5e0382f5fde78",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9a38832_aff9f6b7",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 667,
+      "author": {
+        "id": 17257
+      },
+      "writtenOn": "2025-06-11T13:36:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc84b71d_3444c0ee",
+      "range": {
+        "startLine": 667,
+        "startChar": 8,
+        "endLine": 667,
+        "endChar": 53
+      },
+      "revId": "e00f6b3e92cb1ae008e5821103d5e0382f5fde78",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }

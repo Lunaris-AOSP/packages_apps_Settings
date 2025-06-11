@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea0e5cee_e9460e81",
+        "filename": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 667,
+      "author": {
+        "id": 13648
+      },
+      "writtenOn": "2025-06-11T13:28:46Z",
+      "side": 1,
+      "message": "Isn\u0027t it preferable to drop this method and always pass a context (either context or getContext())?",
+      "range": {
+        "startLine": 667,
+        "startChar": 8,
+        "endLine": 667,
+        "endChar": 53
+      },
+      "revId": "e00f6b3e92cb1ae008e5821103d5e0382f5fde78",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e3fa4ca_37e802ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 35350
+      },
+      "writtenOn": "2025-06-17T22:28:43Z",
+      "side": 1,
+      "message": "Tested on an emulator. Builds and works.",
+      "revId": "01b218829c1e3ba12b4fb63a3c1f2f3193e49385",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49c5749c_afe43014",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 34612
+      },
+      "writtenOn": "2025-06-25T09:48:01Z",
+      "side": 1,
+      "message": "This overwrites the custom DNS hostname. \n\nSteps to reproduce:\n1. Set a custom private DNS hostname.\n2. Switch to Cloudflare DNS and switch back to custom DNS.",
+      "revId": "dba4695971f50261877898f0977a24528440a058",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}

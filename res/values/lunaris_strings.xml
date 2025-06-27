@@ -301,4 +301,6 @@
 
     <!-- Wifi Display settings. The title of a menu item to disable mirroring confimration [CHAR LIMIT=40] -->
     <string name="mirroring_confirmation_disable_menu_item">Disable mirroring confirmation</string>
+
+    <string name="lunaris_version">Lunaris-AOSP Version</string>
 </resources>

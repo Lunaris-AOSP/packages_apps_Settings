@@ -132,7 +132,6 @@ android_library {
         // Lineage dependencies
         "org.lineageos.platform.internal",
         "LineagePreferenceLib",
-        "vendor.lineage.fastcharge-V1.0-java",
         "androidx.room_room-runtime",
         "colorpickerview",
         "androidx.palette_palette",

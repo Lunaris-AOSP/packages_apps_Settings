@@ -294,4 +294,14 @@
     <string name="mirroring_confirmation_disable_menu_item">Disable mirroring confirmation</string>
 
     <string name="lunaris_version">Lunaris-AOSP Version</string>
+    
+    <!-- Model and Hardware -->
+    <string name="lunaris_device_title">Device</string>
+    <string name="lunaris_processor_code_title">Processor</string>
+    <string name="lunaris_battery_type_title">Battery</string>
+    <string name="lunaris_screen_title">Screen</string>
+    <string name="lunaris_device_message">ICorn 10 Pro Max</string>
+    <string name="lunaris_processor_code_message">Chicken Nuggets® 52</string>
+    <string name="lunaris_battery_type_message">15000 mAh</string>
+    <string name="lunaris_screen_message">Cathode Ray Tube 24hz</string>
 </resources>

@@ -21,6 +21,11 @@
     android:title="@string/firmware_version"
     settings:keywords="@string/keywords_android_version">
 
+    <com.android.settingslib.widget.LayoutPreference
+        android:key="superior_info"
+        android:layout="@layout/about_phone_info"
+        android:selectable="false" />
+
     <!-- Android version -->
     <Preference
         android:key="os_firmware_version"

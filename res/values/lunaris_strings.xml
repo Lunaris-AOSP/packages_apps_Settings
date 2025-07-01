@@ -329,4 +329,14 @@
     <string name="doze_gesture_ambient_summary">Show Ambient Display instead of fully waking the screen up</string>
     <string name="gesture_wake_ambient">Show Ambient</string>
     <string name="gesture_wake">Fully wake</string>
+
+    <!-- Model and Hardware -->
+    <string name="lunaris_device_title">Device</string>
+    <string name="lunaris_processor_code_title">Processor</string>
+    <string name="lunaris_battery_type_title">Battery</string>
+    <string name="lunaris_screen_title">Screen</string>
+    <string name="lunaris_device_message">Nothing Phone 2</string>
+    <string name="lunaris_processor_code_message">Snapdragon® 8+ Gen 1</string>
+    <string name="lunaris_battery_type_message">4700 mAh</string>
+    <string name="lunaris_screen_message">Amoled LTPO 120hz</string>
 </resources>

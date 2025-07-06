@@ -64,6 +64,8 @@ import java.util.Map;
 public class ColorModePreferenceFragment extends RadioButtonPickerFragment {
 
     private static final String KEY_COLOR_MODE_PREFIX = "color_mode_";
+    private static final String KEY_COLOR_TEMPERATURE = "color_temperature";
+    private static final String KEY_COLOR_SATURATION = "color_saturation";
 
     private static final int COLOR_MODE_FALLBACK = COLOR_MODE_NATURAL;
 
@@ -214,6 +216,16 @@ public class ColorModePreferenceFragment extends RadioButtonPickerFragment {
         if (ColorDisplayManager.isColorTransformAccelerated(screen.getContext())) {
             getPreferenceManager().inflateFromResource(screen.getContext(), R.xml.color_mode_settings,
                     screen);
+        }
+        final List<BasePreferenceController> preferenceControllers = PreferenceControllerListHelper
+                .getPreferenceControllersFromXml(getContext(), getPreferenceScreenResId());
+        for (var controller : preferenceControllers) {
+            if (controller instanceof ColorBalancePreferenceController) {
+                // this is handled separately below
+                continue;
+            }
+            controller.updateState(findPreference(controller.getPreferenceKey()));
+            controller.displayPreference(screen);
         }
         for (int channel = 0; channel < 3; channel++) {
             ColorBalancePreferenceController controller = new ColorBalancePreferenceController(

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7cbd5837_12c7830a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2025-07-12T01:34:54Z",
+      "side": 1,
+      "message": "DNM, but does fix gen_picks issues until AIDL FastCharge is a thing.",
+      "revId": "50d76df5e329dd88d8c774e2d4163da5cb15c977",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}

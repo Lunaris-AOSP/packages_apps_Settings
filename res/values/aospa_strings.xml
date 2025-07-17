@@ -26,5 +26,8 @@
     <string name="ramping_ringer_no_silence_title">Skip silence</string>
     <string name="ramping_ringer_no_silence_summary_on">Start ramping right when ringing starts</string>
     <string name="ramping_ringer_no_silence_summary_off">Vibrate only for half of the duration before ramping</string>
+
+    <string name="flashlight_strength_title">Flashlight strength</string>
+    <string name="flashlight_strength_summary">Adjust the brightness level of the flashlight</string>
     
 </resources>

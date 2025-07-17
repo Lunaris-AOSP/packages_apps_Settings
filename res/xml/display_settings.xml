@@ -202,6 +202,15 @@
             android:summary="@string/hdr_display_summary"
             settings:controller="com.android.settings.display.HdrDisplayPreferenceController"/>
 
+        <org.lunaris.settings.preferences.SystemSettingSeekBarPreference
+            android:key="flashlight_strength"
+            android:title="@string/flashlight_strength_title"
+            android:summary="@string/flashlight_strength_summary"
+            android:max="100"
+            android:min="1"
+            android:defaultValue="50"
+            settings:controller="com.android.settings.display.FlashlightStrengthPreferenceController" />
+
         <org.lunaris.settings.preferences.SecureSettingSeekBarPreference
             android:key="hdr_max_brightness_percent"
             android:title="@string/hdr_max_brightness_percent_title"

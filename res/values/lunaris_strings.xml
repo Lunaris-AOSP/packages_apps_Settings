@@ -375,7 +375,9 @@
     <string name="touchscreen_gesture_action_play_pause_music">Play/pause music playback</string>
     <string name="hardware_keys_action_play_pause_music" translatable="false">@string/touchscreen_gesture_action_play_pause_music</string>
     <string name="additional_buttons_title">Additional buttons</string>
+    <string name="three_finger_gesture_action_dialog_title">Swipe Three Finger Gestures Actions</string>
     <string name="hardware_keys_power_key_title">Power button</string>
+    <string name="hardware_keys_action_kill_app">Kill foreground app</string>
     <string name="hardware_keys_home_key_title">Home button</string>
     <string name="hardware_keys_back_key_title">Back button</string>
     <string name="hardware_keys_menu_key_title">Menu button</string>
@@ -397,7 +399,6 @@
     <string name="hardware_keys_action_last_app">Last app</string>
     <string name="hardware_keys_action_split_screen">Split screen</string>
     <string name="hardware_keys_action_close_app">Kill app</string>
-    <string name="hardware_keys_action_play_pause_music" translatable="false">@string/touchscreen_gesture_action_play_pause_music</string>
     <string name="hardware_keys_action_torch">Toggle torch</string>
     <string name="hardware_keys_action_screenshot">Take screenshot</string>
     <string name="hardware_keys_action_volume_panel">Toggle volume panel</string>

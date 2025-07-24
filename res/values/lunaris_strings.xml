@@ -152,4 +152,5 @@
     <string name="lunaris_processor_code_message">Chicken Nuggets® 52</string>
     <string name="lunaris_battery_type_message">15000 mAh</string>
     <string name="lunaris_screen_message">Cathode Ray Tube 24hz</string>
+    <string name="lunaris_build_type">Build Package Type</string>
 </resources>

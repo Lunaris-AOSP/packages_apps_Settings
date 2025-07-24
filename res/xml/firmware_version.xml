@@ -43,6 +43,13 @@
         settings:searchable="false"
         settings:controller="com.android.settings.deviceinfo.firmwareversion.FirmwareVersionDetailPreferenceController"/>
 
+    <Preference
+        android:key="lunaris_buildtype"
+        android:title="@string/lunaris_build_type"
+        android:summary="@string/summary_placeholder"
+        settings:enableCopying="true"
+        settings:controller="com.android.settings.deviceinfo.firmwareversion.LunarisBuildTypePreferenceController"/>
+
     <!-- Security patch -->
     <Preference
         android:key="security_key"

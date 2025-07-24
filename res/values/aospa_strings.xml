@@ -17,6 +17,7 @@
 
 <!-- Paranoid Maintainer -->
     <string name="Paranoid_maintainer">Who\'s to blame</string>
+    <string name="lunaris_build_type">Build Package Type</string>
 
     <!-- Ramping ringer -->
     <string name="ramping_ringer_duration_title">Ramping duration</string>

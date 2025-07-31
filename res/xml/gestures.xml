@@ -56,6 +56,12 @@
         settings:controller="com.android.settings.gestures.ThreeFingerSwipePreferenceController" />
 
     <Preference
+        android:key="gesture_shake_action"
+        android:title="@string/shake_gestures_enabled_title"
+        android:summary="@string/shake_gestures_enabled_summary"
+        android:fragment="com.android.settings.gestures.Gestures" />
+
+    <Preference
         android:key="gesture_double_twist_input_summary"
         android:title="@string/double_twist_for_camera_mode_title"
         android:fragment="com.android.settings.gestures.DoubleTwistGestureSettings"

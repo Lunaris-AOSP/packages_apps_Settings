@@ -37,7 +37,7 @@ public class AmbientDisplayNotificationsPreferenceController extends
     private final int OFF = 0;
 
     @VisibleForTesting
-    static final String KEY_AMBIENT_DISPLAY_NOTIFICATIONS = "ambient_display_notification";
+    static final String KEY_AMBIENT_DISPLAY_NOTIFICATIONS = "doze_pulse_on_notification";
     private static final int MY_USER = UserHandle.myUserId();
 
     private final MetricsFeatureProvider mMetricsFeatureProvider;
@@ -69,12 +69,12 @@ public class AmbientDisplayNotificationsPreferenceController extends
 
     @Override
     public boolean isChecked() {
-        return getAmbientConfig().pulseOnNotificationEnabled(MY_USER);
+        return getAmbientConfig().pulseOnNotificationEnabledOverride(MY_USER);
     }
 
     @Override
     public boolean setChecked(boolean isChecked) {
-        Settings.Secure.putInt(mContext.getContentResolver(), "doze_pulse_on_notification", isChecked ? ON : OFF);
+        Settings.Secure.putInt(mContext.getContentResolver(), KEY_AMBIENT_DISPLAY_NOTIFICATIONS, isChecked ? ON : OFF);
         return true;
     }
 
@@ -86,7 +86,7 @@ public class AmbientDisplayNotificationsPreferenceController extends
 
     @Override
     public boolean isSliceable() {
-        return TextUtils.equals(getPreferenceKey(), "ambient_display_notification");
+        return TextUtils.equals(getPreferenceKey(), KEY_AMBIENT_DISPLAY_NOTIFICATIONS);
     }
 
     @Override

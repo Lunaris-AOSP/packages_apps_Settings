@@ -276,6 +276,12 @@
             android:defaultValue="@*lineageos.platform:bool/config_dt2sGestureEnabledByDefault"
             settings:requiresConfig="@*lineageos.platform:bool/config_dt2sGestureAvailable" />
 
+        <org.lunaris.settings.preferences.SystemSettingSwitchPreference
+            android:key="double_tap_sleep_lockscreen"
+            android:title="@string/lockscreen_doubletap_sleep_title"
+            android:summary="@string/lockscreen_doubletap_sleep_summary"
+            android:defaultValue="true" />
+
         <lineageos.preference.LineageGlobalSettingSwitchPreference
             android:key="wake_when_plugged_or_unplugged"
             android:title="@string/wake_when_plugged_or_unplugged_title"

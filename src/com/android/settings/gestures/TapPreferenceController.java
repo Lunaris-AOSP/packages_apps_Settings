@@ -75,8 +75,8 @@ public class TapPreferenceController extends AbstractPreferenceController
         updateState(mSwitch);
 
         mVibPref = screen.findPreference(VIB_KEY);
-        final Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-        mIsVibAvailable = vibrator != null && vibrator.hasVibrator();
+        mIsVibAvailable = mContext.getResources().getBoolean(
+                R.bool.config_vibration_supported);
         if (!mIsVibAvailable) mVibPref.setVisible(false);
     }
 

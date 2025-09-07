@@ -864,4 +864,7 @@
 
     <!-- Whether the Gaze is enabled -->
     <bool name="config_gazeEnabled">false</bool>
+
+    <!-- Whether vibration is supported for gesture features -->
+    <bool name="config_vibration_supported">true</bool>
 </resources>

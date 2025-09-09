@@ -458,4 +458,12 @@
     <string name="refresh_rate_summary">A maximum refresh rate of</string>
     <string name="refresh_rate_high_summary">for smoother scrolling and animations.</string>
     <string name="refresh_rate_standard_summary">for better battery life.</string>
+
+    <!-- HBM -->
+    <string name="auto_hbm_enabled_title">Auto High Brightness Mode</string>
+    <string name="auto_hbm_enabled_summary">Automatically enable high brightness mode in strong sunlight. Increases battery usage.</string>
+    <string name="auto_hbm_lux_on_title">HBM Activation Threshold</string>
+    <string name="auto_hbm_lux_on_summary">Ambient light level at which high brightness mode will turn on</string>
+    <string name="auto_hbm_lux_off_title">HBM Deactivation Threshold</string>
+    <string name="auto_hbm_lux_off_summary">Ambient light level below which high brightness mode will turn off</string>
 </resources>

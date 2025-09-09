@@ -204,6 +204,13 @@
             settings:interval="1"/>
 
         <Preference
+            android:key="hbm"
+            android:title="@string/auto_hbm_enabled_title"
+            android:summary="@string/auto_hbm_enabled_summary"
+            android:fragment="com.android.settings.display.Hbm"
+            settings:controller="com.android.settings.display.HbmSettingsPreferenceController" />
+
+        <Preference
             android:key="refresh_rate"
             android:title="@string/refresh_rate_settings_title"
             android:fragment="com.android.settings.display.RefreshRateSettings"

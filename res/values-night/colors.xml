@@ -15,30 +15,31 @@
 -->
 
 <resources
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:androidprv="http://schemas.android.com/apk/prv/res/android">
 
-    <!-- Dashboard/homepage icon colors -->
-    <color name="homepage_blue_variant_fg">#ffffffff</color>
-    <color name="homepage_blue_variant_bg">#ff0064ff</color>
-    <color name="homepage_blue_fg">#ffffffff</color>
-    <color name="homepage_blue_bg">#ff00c6ff</color>
-    <color name="homepage_pink_fg">#ffffffff</color>
-    <color name="homepage_pink_bg">#ffff006d</color>
-    <color name="homepage_orange_fg">#ffffffff</color>
-    <color name="homepage_orange_bg">#ffff6d00</color>
-    <color name="homepage_yellow_fg">#ffffffff</color>
-    <color name="homepage_yellow_bg">#ffdc9c00</color>
-    <color name="homepage_green_fg">#ffffffff</color>
-    <color name="homepage_green_bg">#ff00d86f</color>
-    <color name="homepage_grey_fg">#ffffffff</color>
-    <color name="homepage_grey_bg">#ffff00a5</color>
-    <color name="homepage_cyan_fg">#ffffffff</color>
-    <color name="homepage_cyan_bg">#ff00d1e3</color>
-    <color name="homepage_red_fg">#ffffffff</color>
-    <color name="homepage_red_bg">#ffff0000</color>
-    <color name="homepage_purple_fg">#ffffffff</color>
-    <color name="homepage_purple_bg">#ffc300ff</color>
-    <color name="homepage_dark_green_bg">#ff059267</color>
+    <color name="homepage_blue_variant_fg">#FF181A1A</color>
+    <color name="homepage_blue_variant_bg">#FFFFFFFF</color>
+    <color name="homepage_blue_fg">#FF181A1A</color>
+    <color name="homepage_blue_bg">#FFFFFFFF</color>
+    <color name="homepage_pink_fg">#FF181A1A</color>
+    <color name="homepage_pink_bg">#FFFFFFFF</color>
+    <color name="homepage_orange_fg">#FF181A1A</color>
+    <color name="homepage_orange_bg">#FFFFFFFF</color>
+    <color name="homepage_yellow_fg">#FF181A1A</color>
+    <color name="homepage_yellow_bg">#FFFFFFFF</color>
+    <color name="homepage_green_fg">#FF181A1A</color>
+    <color name="homepage_green_bg">#FFFFFFFF</color>
+    <color name="homepage_grey_fg">#FF181A1A</color>
+    <color name="homepage_grey_bg">#FFFFFFFF</color>
+    <color name="homepage_cyan_fg">#FF181A1A</color>
+    <color name="homepage_cyan_bg">#FFFFFFFF</color>
+    <color name="homepage_red_fg">#FF181A1A</color>
+    <color name="homepage_red_bg">#FFFFFFFF</color>
+    <color name="homepage_purple_fg">#FF181A1A</color>
+    <color name="homepage_purple_bg">#FFFFFFFF</color>
+    <color name="homepage_dark_green_bg">#FFFFFFFF</color>
+    <color name="homepage_purple_variant_bg">#FFFFFFFF</color>
 
     <color name="contextual_card_dismissal_background">@*android:color/background_device_default_dark</color>
     <color name="contextual_card_background">@*android:color/background_device_default_dark</color>

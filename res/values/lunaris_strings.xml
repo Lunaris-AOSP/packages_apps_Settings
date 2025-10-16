@@ -219,4 +219,8 @@
     <!-- Pulse on music track change -->
     <string name="pulse_on_new_tracks_title">Music ticker</string>
     <string name="pulse_on_new_tracks_summary">Show Ambient Display when a new music track is played</string>
+
+    <!-- Override Mock Location restriction -->
+    <string name="override_mock_location_title">Override MockLocation restriction</string>
+    <string name="override_mock_location_summary">When enabled, apps cannot detect mock locations</string>
 </resources>

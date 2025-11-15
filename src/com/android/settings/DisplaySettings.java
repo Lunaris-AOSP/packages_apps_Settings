@@ -27,6 +27,7 @@ import com.android.settings.dashboard.DashboardFragment;
 import com.android.settings.display.BrightnessLevelPreferenceController;
 import com.android.settings.display.CameraGesturePreferenceController;
 import com.android.settings.display.DisplayScreen;
+import com.android.settings.display.HighTouchSensitivityPreferenceController;
 import com.android.settings.display.LiftToWakePreferenceController;
 import com.android.settings.display.PocketJudgePreferenceController;
 import com.android.settings.display.ShowOperatorNamePreferenceController;
@@ -96,6 +97,7 @@ public class DisplaySettings extends DashboardFragment {
         controllers.add(new ThemePreferenceController(context));
         controllers.add(new EmulateDisplayCutoutPreferenceController(context));
         controllers.add(new BrightnessLevelPreferenceController(context, lifecycle));
+        controllers.add(new HighTouchSensitivityPreferenceController(context, KEY_HIGH_TOUCH_SENSITIVITY));
         return controllers;
     }
 

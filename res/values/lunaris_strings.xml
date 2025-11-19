@@ -28,8 +28,8 @@
     <string name="show_clipboard_overlay_summary">Show an overlay in the left bottom corner of the screen when something is copied to the clipboard</string>
 
     <!-- Force LTE_CA -->
-    <string name="force_lte_ca">Force LTE CA</string>
-    <string name="force_lte_ca_summary">Force LTE carrier aggregation to work</string>
+    <string name="force_lte_ca_title">LTE carrier aggregation</string>
+    <string name="force_lte_ca_summary">Enhances LTE bandwidth by aggregating supported bands</string>
 
     <!-- Cloudflare Block Malware DNS Option -->
     <string name="private_dns_mode_cloudflare_block_malware" translatable="false">Cloudflare Block Malware DNS</string>

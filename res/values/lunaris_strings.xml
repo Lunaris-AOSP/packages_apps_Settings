@@ -27,4 +27,7 @@
     <string name="auto_hbm_lux_on_summary">Ambient light level at which high brightness mode will turn on</string>
     <string name="auto_hbm_lux_off_title">HBM Deactivation Threshold</string>
     <string name="auto_hbm_lux_off_summary">Ambient light level below which high brightness mode will turn off</string>
+
+    <string name="show_back_gesture_background_title">Show back gesture background</string>
+    <string name="show_back_gesture_background_summary">Display a background when performing back gestures</string>
 </resources>

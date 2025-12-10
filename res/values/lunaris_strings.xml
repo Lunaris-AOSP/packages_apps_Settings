@@ -216,6 +216,8 @@
     <!-- Back gesture animation -->
     <string name="back_gesture_arrow_title">Back gesture animation</string>
     <string name="back_gesture_arrow_summary">Show an animated arrow for back gesture</string>
+    <string name="show_back_gesture_background_title">Show back gesture background</string>
+    <string name="show_back_gesture_background_summary">Display a background when performing back gestures</string>
 
     <!-- Battery saver refresh rate -->
     <string name="battery_saver_refresh_rate_title">Reduce refresh rate</string>

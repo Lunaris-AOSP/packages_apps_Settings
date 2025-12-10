@@ -35,6 +35,12 @@
         android:summary="@string/back_gesture_arrow_summary"
         android:defaultValue="true" />
 
+    <org.lunaris.settings.preferences.SecureSettingSwitchPreference
+        android:key="show_back_gesture_background"
+        android:title="@string/show_back_gesture_background_title"
+        android:summary="@string/show_back_gesture_background_summary"
+        android:defaultValue="false" />
+
     <com.android.settingslib.widget.SliderPreference
         android:key="gesture_back_height"
         android:title="@string/back_height_title"

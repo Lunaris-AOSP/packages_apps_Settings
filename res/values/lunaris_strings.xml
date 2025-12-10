@@ -217,6 +217,9 @@
     <string name="back_gesture_arrow_title">Back gesture animation</string>
     <string name="back_gesture_arrow_summary">Show an animated arrow for back gesture</string>
 
+    <string name="show_back_gesture_background_title">Show back gesture background</string>
+    <string name="show_back_gesture_background_summary">Display a background when performing back gestures</string>
+
     <!-- Enforce DNS for VPN -->
     <string name="vpn_enforce_dns_title">Disable for VPN</string>
     <string name="vpn_enforce_dns_summary">Disable the private DNS when connected to a VPN\nWill restore upon disconnecting</string>

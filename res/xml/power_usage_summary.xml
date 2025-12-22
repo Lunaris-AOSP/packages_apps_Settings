@@ -67,6 +67,13 @@
             settings:controller="com.android.settings.fuelgauge.batterytip.BatteryManagerPreferenceController"
             settings:keywords="@string/keywords_battery_adaptive_preferences" />
 
+        <!-- Low Battery Dialogs -->
+        <org.lunaris.settings.preferences.SecureSettingSwitchPreference
+            android:key="low_battery_dialogs_enabled"
+            android:title="@string/low_battery_dialogs_title"
+            android:summary="@string/low_battery_dialogs_summary"
+            android:defaultValue="true" />
+
         <!-- Battery light
         <lineageos.preference.LineagePartsPreference
             android:key="battery_lights"

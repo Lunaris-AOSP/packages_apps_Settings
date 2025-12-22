@@ -95,6 +95,13 @@
         android:summary="@string/notification_battery_charge_level_summary"
         android:fragment="com.android.settings.fuelgauge.BatteryChargeSoundSettings" />
 
+    <!-- Low Battery Dialogs -->
+    <org.lunaris.settings.preferences.SecureSettingSwitchPreference
+        android:key="low_battery_dialogs_enabled"
+        android:title="@string/low_battery_dialogs_title"
+        android:summary="@string/low_battery_dialogs_summary"
+        android:defaultValue="true" />
+
     <!-- Battery light -->
     <lineageos.preference.LineagePartsPreference
         android:key="battery_lights"

@@ -438,4 +438,8 @@
     <string name="notification_battery_charge_level_seek_bar">Battery level</string>
     <string name="notification_battery_charge_level_ringtone">Ringtone</string>
     <string name="notification_battery_charge_level_silent">Silent</string>
+
+    <!-- Low Battery Dialogs -->
+    <string name="low_battery_dialogs_title">Low battery dialogs</string>
+    <string name="low_battery_dialogs_summary">Show low battery warning and shutdown dialogs</string>
 </resources>

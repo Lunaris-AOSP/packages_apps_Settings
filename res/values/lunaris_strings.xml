@@ -442,4 +442,8 @@
     <!-- Low Battery Dialogs -->
     <string name="low_battery_dialogs_title">Low battery dialogs</string>
     <string name="low_battery_dialogs_summary">Show low battery warning and shutdown dialogs</string>
+
+    <!-- Multi Audio Focus -->
+    <string name="multi_audio_focus_title">Multi audio focus</string>
+    <string name="multi_audio_focus_summary">Allow multiple apps to play audio simultaneously</string>
 </resources>

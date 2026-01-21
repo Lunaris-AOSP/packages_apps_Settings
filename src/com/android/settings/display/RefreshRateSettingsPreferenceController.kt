@@ -31,14 +31,23 @@ class RefreshRateSettingsPreferenceController(
     private val displayManager =
         mContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
 
+    private fun getRefreshRates(): List<Int> {
+        val customList = SystemProperties.get("persist.sys.display_refresh_rates_list", "")
+        return if (customList.isNotEmpty()) {
+            customList.split(",").mapNotNull { it.trim().toFloatOrNull()?.toInt() }.distinct().sorted()
+        } else {
+            val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
+            display?.supportedModes
+                ?.map { it.refreshRate.toInt() }
+                ?.distinct()
+                ?.sorted()
+                ?: emptyList()
+        }
+    }
+
     private fun getModeMap(): Map<Int, String> {
         val modeMap = mutableMapOf<Int, String>()
-        val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
-        val refreshRates = display?.supportedModes
-            ?.map { it.refreshRate.toInt() }
-            ?.distinct()
-            ?.sorted()
-            ?: emptyList()
+        val refreshRates = getRefreshRates()
 
         if (refreshRates.isEmpty()) return emptyMap()
 
@@ -56,11 +65,7 @@ class RefreshRateSettingsPreferenceController(
     }
 
     override fun getAvailabilityStatus(): Int {
-        val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
-        val refreshRates = display?.supportedModes
-            ?.map { it.refreshRate }
-            ?.distinct()
-            ?: emptyList()
+        val refreshRates = getRefreshRates()
         return if (refreshRates.size > 1) AVAILABLE else UNSUPPORTED_ON_DEVICE
     }
 

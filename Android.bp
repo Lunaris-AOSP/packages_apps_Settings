@@ -139,7 +139,9 @@ android_library {
         "kotlin-stdlib",
         "kotlinx_coroutines_android",
         "kotlinx_coroutines",
-	"androidx.compose.ui_ui",
+        
+        // compose
+	    "androidx.compose.ui_ui",
         "androidx.compose.ui_ui-tooling-preview",
         "androidx.compose.foundation_foundation",
         "androidx.compose.runtime_runtime",

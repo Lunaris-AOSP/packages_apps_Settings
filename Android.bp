@@ -55,16 +55,22 @@ android_library {
     srcs: [
         "src/**/*.java",
         "src/**/*.kt",
+        "Singularity/src/**/*.java",
+        "Singularity/src/**/*.kt",
     ],
     exclude_srcs: [
         "src/com/android/settings/biometrics/fingerprint2/lib/**/*.kt",
     ],
     javac_shard_size: 50,
     use_resource_processor: true,
+
+    aaptflags: ["--extra-packages org.lunaris.settings"],
+
     resource_dirs: [
         "res",
         "res-export", // for external usage
         "res-product",
+        "Singularity/res",
     ],
     optional_uses_libs: ["com.android.extensions.appfunctions"],
     static_libs: [

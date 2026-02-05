@@ -21,6 +21,10 @@
     android:key="top_level_settings">
 
     <com.android.settingslib.widget.UntitledPreferenceCategory
+        android:order="-140"
+        android:key="top_level_account_category"/>
+
+    <com.android.settingslib.widget.UntitledPreferenceCategory
         android:order="-130"
         android:key="top_level_connectivity_category">
 
@@ -244,10 +248,6 @@
     </com.android.settingslib.widget.UntitledPreferenceCategory>
 
     <com.android.settingslib.widget.UntitledPreferenceCategory
-        android:order="-90"
-        android:key="top_level_account_category"/>
-
-    <com.android.settingslib.widget.UntitledPreferenceCategory
         android:order="100"
         android:key="top_level_support_category"
         android:layout="@layout/settingslib_expressive_untitled_preference_category">
@@ -273,9 +273,8 @@
     </com.android.settingslib.widget.UntitledPreferenceCategory>
 
     <com.android.settingslib.widget.UntitledPreferenceCategory
-        android:order="100"
-        android:key="top_level_account_category">
-        
-    </com.android.settingslib.widget.UntitledPreferenceCategory>
+        android:order="120"
+        android:key="top_level_empty_category"
+        android:layout="@layout/settingslib_expressive_untitled_preference_category"/>
 </PreferenceScreen>
 

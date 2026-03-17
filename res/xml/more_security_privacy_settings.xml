@@ -122,13 +122,6 @@
             android:summary="@string/content_capture_summary"
             settings:controller="com.android.settings.privacy.EnableContentCaptureWithServiceSettingsPreferenceController"/>
 
-        <Preference
-            android:key="cellular_security_settings_privacy"
-            android:title="@string/cellular_security_title"
-            android:summary="@string/cellular_security_summary"
-            android:fragment="com.android.settings.network.telephony.CellularSecuritySettingsFragment"
-            settings:controller="com.android.settings.network.CellularSecurityPreferenceController"
-            settings:searchable="false"/>
     </PreferenceCategory>
 
     <!-- Security section. -->
@@ -229,13 +222,5 @@
         android:title="@string/memtag_title"
         android:fragment="com.android.settings.security.MemtagPage"
         settings:controller="com.android.settings.security.MemtagPagePreferenceController" />
-
-    <Preference
-        android:order="94"
-        android:key="hide_developer_status_settings"
-        android:title="@string/hide_developer_status_title"
-        android:summary="@string/hide_developer_status_summary"
-        android:fragment="com.android.settings.security.HideDeveloperStatusSettings"
-        settings:controller="com.android.settings.security.HideDeveloperStatusPreferenceController" />
 
 </PreferenceScreen>

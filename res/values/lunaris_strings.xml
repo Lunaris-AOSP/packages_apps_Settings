@@ -264,6 +264,9 @@
     <string name="color_temperature_start_label">Warm</string>
     <string name="color_temperature_end_label">Cool</string>
     <string name="keywords_color_temperature">color, color temperature, warm, cool, LiveDisplay</string>
+    <string name="color_hue_title">Hue</string>
+    <string name="color_contrast_title">Contrast</string>
+    <string name="color_picture_brightness_title">Picture brightness</string>
 
     <!-- Color saturation -->
     <string name="color_saturation_title">Saturation</string>

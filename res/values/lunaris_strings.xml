@@ -208,4 +208,7 @@
     <string name="night_display_activation_off_custom">Turn off until <xliff:g name="time" example="10 PM">%1$s</xliff:g></string>
 
     <string name="double_tap_power_torch_action_title">Flashlight</string>
+
+    <string name="gesture_navbar_auto_hide_title">Auto-hide navigation hint</string>
+    <string name="gesture_navbar_auto_hide_summary">Automatically hide the navigation hint after a short period of inactivity</string>
 </resources>

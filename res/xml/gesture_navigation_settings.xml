@@ -89,7 +89,7 @@
         android:key="show_back_gesture_background"
         android:title="@string/show_back_gesture_background_title"
         android:summary="@string/show_back_gesture_background_summary"
-        android:defaultValue="false" />
+        android:defaultValue="true" />
 
     <org.lunaris.settings.preferences.SecureSettingSwitchPreference
         android:key="back_gesture_haptic"

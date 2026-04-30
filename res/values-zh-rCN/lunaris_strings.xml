@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2024-2026 Lunaris AOSP
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Low Battery Dialogs -->
+    <string name="low_battery_dialogs_title">低电量对话框</string>
+    <string name="low_battery_dialogs_summary">显示低电量警告和关机对话框</string>
+    <string name="battery_saver_refresh_rate_title">降低刷新率</string>
+    <string name="battery_saver_refresh_rate_summary">开启省电模式时，使用 60 Hz 屏幕刷新率以节省电量</string>
+    <string name="battery_saver_refresh_rate_disabled_summary">已开启极高刷新率</string>
+
+    <!-- HBM -->
+    <string name="auto_hbm_enabled_title">自动高亮度模式</string>
+    <string name="auto_hbm_enabled_summary">在强烈阳光下自动启用高亮度模式，会增加电池耗电量</string>
+    <string name="auto_hbm_lux_on_title">高亮度模式激活阈值</string>
+    <string name="auto_hbm_lux_on_summary">高亮度模式开启时的环境光线强度</string>
+    <string name="auto_hbm_lux_off_title">高亮度模式关闭阈值</string>
+    <string name="auto_hbm_lux_off_summary">高亮度模式关闭时的环境光线强度阈值</string>
+
+    <string name="show_back_gesture_background_title">显示返回手势背景</string>
+    <string name="show_back_gesture_background_summary">执行返回手势时显示背景</string>
+
+    <!-- Battery Saver -->
+    <string name="adaptive_battery_switch_title">使用自适应电池</string>
+    <string name="basic_battery_saver_title">标准省电模式</string>
+    <string name="basic_battery_saver_summary">限制视觉效果和后台活动。如果未开启，则开启深色主题</string>
+    <string name="battery_saver_reminder_category">提醒</string>
+    <string name="battery_saver_reminder_switch_title">省电模式提醒</string>
+    <string name="battery_saver_reminder_switch_summary">电量不足时收到提醒</string>
+    <string name="battery_saver_schedule_category">设置计划</string>
+    <string name="battery_saver_schedule_switch_title">根据电量开启</string>
+    <string name="battery_saver_schedule_switch_summary">当电量降至您设定的水平时，省电模式将自动开启</string>
+    <string name="battery_schedule_title">计划与提醒</string>
+    <string name="battery_schedule_summary">管理省电模式的开启时机</string>
+    <string name="extreme_battery_saver_title">极致省电模式</string>
+    <string name="extreme_battery_saver_summary">包含上述所有更改，同时会暂停非必要应用及其通知</string>
+    <string name="smart_battery_a11y_expand_label">展开，自适应电池</string>
+    <string name="smart_battery_a11y_collapse_label">收起，自适应电池</string>
+    <string name="smart_battery_title">自适应电池</string>
+    <string name="unified_battery_saver_page_intro">节省电量，帮助手机在两次充电之间续航更久</string>
+
+    <!-- Ambient wake toggles -->
+    <string name="doze_gesture_ambient_title">显示微光屏幕</string>
+    <string name="doze_gesture_ambient_summary">显示微光屏幕，而非完全点亮屏幕</string>
+    <string name="gesture_wake_ambient">显示微光屏幕</string>
+    <string name="gesture_wake">完全唤醒</string>
+
+    <!-- Wake gestures haptics -->
+    <string name="doze_gesture_vibrate_title">触感反馈</string>
+    <string name="doze_gesture_vibrate_summary">触发此手势时振动</string>
+
+    <!-- Reality Display Engine -->
+    <string name="display_engine_category">显示引擎</string>
+    <string name="display_engine_mode_title">实境显示引擎</string>
+    <string name="x_reality_engine_mode_title">X-Reality 引擎</string>
+    <string name="vivid_engine_mode_title">鲜艳显示</string>
+    <string name="triluminos_engine_mode_title">特丽魅彩显示</string>
+    <string name="display_engine_default">默认</string>
+    <string name="display_engine_mode_footer_text">显示引擎灵感源自索尼的 Bravia/X-Reality 引擎，包含鲜艳模式（提升亮度和色彩饱和度）、X-Reality 模式（增强细节和色彩准确度）以及特丽魅彩模式（实现出色的显示色彩准确度）</string>
+
+    <!-- Long press navbar to search -->
+    <string name="navbar_long_press_gesture_title">长按搜索</string>
+    <string name="navbar_long_press_gesture_summary">长按主屏幕按钮或导航条，使用屏幕上的内容进行搜索</string>
+
+    <!-- Circle to search -->
+    <string name="search_all_entrypoints_enabled_title">画圈搜索</string>
+    <string name="search_all_entrypoints_enabled_summary">在导航栏长按时使用画圈搜索替代 Google 智能镜头</string>
+
+    <!-- Wifi Display settings. The title of a menu item to disable mirroring confimration [CHAR LIMIT=40] -->
+    <string name="mirroring_confirmation_disable_menu_item">禁用镜像确认</string>
+
+    <!-- Hide developer status -->
+    <string name="hide_developer_status_title">隐藏开发者状态</string>
+    <string name="hide_developer_status_summary">向应用隐藏开发者状态</string>
+
+    <!-- Per-app volume -->
+    <string name="app_volume">应用音量</string>
+    <string name="app_volume_title">单独调节应用音量</string>
+    <string name="app_volume_summary">在音量对话框中显示单独调节应用音量的按钮</string>
+
+    <!-- Doze on double tap -->
+    <string name="double_tap_title">双击</string>
+    <string name="doze_double_tap_title">双击查看手机</string>
+    <string name="doze_double_tap_summary">双击时显示通知提示</string>
+
+    <!-- Multi Audio Focus -->
+    <string name="multi_audio_focus_title">多音频焦点</string>
+    <string name="multi_audio_focus_summary">允许多个应用同时播放音频</string>
+    
+    <!-- Override Mock Location restriction -->
+    <string name="override_mock_location_title">覆盖模拟位置限制</string>
+    <string name="override_mock_location_summary">启用后，应用将无法检测到模拟位置</string>
+
+    <!-- WiFi Hotspot -->
+    <string name="wifi_hotspot_hidden_ssid_title">隐藏网络</string>
+    <string name="wifi_hotspot_hidden_ssid_summary">您的移动热点名称不会出现在可用的 WLAN 网络列表中</string>
+    <string name="wifi_hotspot_client_manager_title">已连接的设备</string>
+    <string name="wifi_hotspot_client_manager_summary">列出并管理连接到热点的设备</string>
+    <string name="wifi_hotspot_client_manager_list_only_summary">列出连接到热点的设备</string>
+    <string name="wifi_hotspot_client_limit_title">已连接设备的数量限制</string>
+    <string name="wifi_hotspot_blocked_clients_list_title">已屏蔽的设备</string>
+    <string name="wifi_hotspot_connected_clients_list_title">已连接的设备</string>
+    <string name="wifi_hotspot_block_client_dialog_title">屏蔽设备</string>
+    <string name="wifi_hotspot_block_client_dialog_text">此操作将断开\"<xliff:g id="device_name">%1$s</xliff:g>\"与此设备的连接，并将其添加到屏蔽列表中</string>
+    <string name="wifi_hotspot_unblock_client_dialog_title">取消屏蔽设备</string>
+    <string name="wifi_hotspot_unblock_client_dialog_text">设备\"<xliff:g id="device_name">%1$s</xliff:g>\"将能够连接到此热点</string>
+    <string name="wifi_hotspot_client_manager_footer_text">当前没有可用的客户端，已连接和已屏蔽的设备将在此处列出</string>
+    <plurals name="wifi_hotspot_client_limit_summary">
+        <item quantity="one">最多有 <xliff:g id="device_num">%1$d</xliff:g> 台设备可以连接到此热点</item>
+        <item quantity="other">最多有 <xliff:g id="device_num">%1$d</xliff:g> 台设备可以连接到此热点</item>
+    </plurals>
+
+    <!-- Hide apps - App info screen -->
+    <string name="hide">隐藏</string>
+    <string name="hidden">已隐藏</string>
+    <string name="unhide">取消隐藏</string>
+    <string name="hide_app">隐藏应用</string>
+    <string name="unhide_app">取消隐藏应用</string>
+    <string name="unhide_app_desc">如果取消隐藏此应用，它将再次对 Android 系统和其他应用可见。</string>
+    <string name="hide_app_desc">如果隐藏此应用，它将不对 Android 系统和其他应用可见，并且它们可能无法按预期正常运行。请注意，隐藏应用会保留其数据。通过隐藏，您将关闭此应用并在设备上将其隐藏</string>
+    <!-- Label for showing hidden apps in list [CHAR LIMIT=40] -->
+    <string name="filter_hidden_apps">隐藏应用</string>
+
+    <!-- Locale Picker -->
+    <string name="clear_search_query_description">清除查询</string>
+    <string name="language_picker_page">语言选择页面</string>
+    <string name="search_region">搜索区域</string>
+    <string name="search_region_page">搜索区域页面</string>
+
+    <!-- Enforce DNS for VPN -->
+    <string name="vpn_enforce_dns_title">对 VPN 禁用</string>
+    <string name="vpn_enforce_dns_summary">连接到 VPN 时禁用私有 DNS\n断开连接后将恢复</string>
+
+    <!-- Model and Hardware -->
+    <string name="lunaris_version">Lunaris-AOSP 版本</string>
+    <string name="lunaris_device_title">设备</string>
+    <string name="lunaris_processor_code_title">处理器</string>
+    <string name="lunaris_battery_type_title">电池</string>
+    <string name="lunaris_screen_title">屏幕</string>
+    <string name="lunaris_build_type">构建包类型</string>
+
+    <!-- Data Usage Cycle -->
+    <string name="billing_cycle_type_title">移动数据使用周期类型</string>
+    <string name="billing_cycle_type_monthly">每月</string>
+    <string name="billing_cycle_type_weekly">每周</string>
+    <string name="billing_cycle_type_daily">每日</string>
+    <string name="billing_cycle_less_than_one_hour_left">剩余不足1小时</string>
+    <string name="billing_cycle_hours_left">{count, plural,
+        =1      {剩余 # 小时}
+        other   {剩余 # 小时}
+        }</string>
+    <string name="cycle_type_weekly_title">使用周期重置日</string>
+    <string name="cycle_type_weekly_sub">每周的第几天:\n1 = 星期一</string>
+    <string name="cycle_type_daily_title">使用周期重置小时</string>
+    <string name="cycle_type_daily_sub">每天的几点:</string>
+
+    <!-- Smart 5G -->
+    <string name="smart_5g_title">智能 5G</string>
+    <string name="smart_5g_summary">在 5G 和 4G 之间自动切换以减少电池消耗</string>
+
+    <!-- Sleep Mode -->
+    <string name="sleep_mode_title">睡眠模式</string>
+    <string name="sleep_mode_summary_on">开启 / <xliff:g name="auto_mode_summary" example="Never turn off automatically">%1$s</xliff:g></string>
+    <string name="sleep_mode_summary_off">关闭 / <xliff:g name="auto_mode_summary" example="Never turn on automatically">%1$s</xliff:g></string>
+    <string name="sleep_mode_ringer_title">铃声模式</string>
+    <string name="sleep_mode_ringer_off_title">不更改</string>
+    <string name="sleep_mode_ringer_vibrate_title">振动</string>
+    <string name="sleep_mode_ringer_dnd_title">勿扰模式</string>
+    <string name="sleep_mode_ringer_silent_title">静音</string>
+    <string name="sleep_mode_schedule_sunset">日落</string>
+    <string name="sleep_mode_schedule_sunrise">日出</string>
+    <string name="sleep_mode_schedule_mixed_sunset">从日落开启至自定义时间</string>
+    <string name="sleep_mode_schedule_mixed_sunrise">从自定义时间开启至日出</string>
+    <string name="sleep_mode_toggles_title">开关</string>
+    <string name="sleep_mode_wifi_toggle_title">关闭 Wi-Fi</string>
+    <string name="sleep_mode_wifi_toggle_summary">睡眠模式开启时禁用 Wi-Fi</string>
+    <string name="sleep_mode_bluetooth_toggle_title">关闭蓝牙</string>
+    <string name="sleep_mode_bluetooth_toggle_summary">睡眠模式开启时禁用蓝牙</string>
+    <string name="sleep_mode_cellular_toggle_title">关闭移动数据</string>
+    <string name="sleep_mode_cellular_toggle_summary">睡眠模式开启时禁用移动数据</string>
+    <string name="sleep_mode_location_toggle_title">关闭位置信息</string>
+    <string name="sleep_mode_location_toggle_summary">睡眠模式开启时禁用位置信息</string>
+    <string name="sleep_mode_sensors_toggle_title">关闭传感器</string>
+    <string name="sleep_mode_sensors_toggle_summary">睡眠模式开启时禁用传感器</string>
+    <string name="sleep_mode_display_text">睡眠模式允许您禁用某些服务，以帮助节省电量并在您睡觉时使手机保持静音</string>
+    <!-- Display settings screen, activation button action for manual mode. [CHAR LIMIT=40] -->
+    <string name="night_display_activation_on_manual">立即开启</string>
+    <!-- Display settings screen, deactivation button action for manual mode. [CHAR LIMIT=40] -->
+    <string name="night_display_activation_off_manual">立即关闭</string>
+    <!-- Display settings screen, activation button action for sunset-to-sunrise schedule [CHAR LIMIT=40] -->
+    <string name="night_display_activation_on_twilight">开启直至日出</string>
+    <!-- Display settings screen, deactivation button action for sunset-to-sunrise schedule [CHAR LIMIT=40] -->
+    <string name="night_display_activation_off_twilight">关闭直至日落</string>
+    <!-- Display settings screen, activation button action for custom schedule [CHAR LIMIT=40] -->
+    <string name="night_display_activation_on_custom">开启直至 <xliff:g name="time" example="6 AM">%1$s</xliff:g></string>
+    <!-- Display settings screen, deactivation button action for custom schedule [CHAR LIMIT=40] -->
+    <string name="night_display_activation_off_custom">关闭直至 <xliff:g name="time" example="10 PM">%1$s</xliff:g></string>
+
+    <string name="double_tap_power_torch_action_title">手电筒</string>
+
+    <string name="gesture_navbar_auto_hide_title">自动隐藏导航提示</string>
+    <string name="gesture_navbar_auto_hide_summary">长时间不操作后自动隐藏导航提示</string>
+
+    <!-- Per-app configs -->
+    <string name="per_app_config_empty_text">没有已安装的应用支持当前设置</string>
+
+    <!-- Per-app refresh rate -->
+    <string name="per_app_refresh_rate_title">应用单独刷新率</string>
+    <string name="per_app_refresh_rate_summary">为每个应用单独设置刷新率</string>
+    <string name="per_app_refresh_rate_default">跟随系统</string>
+
+    <!-- Screen refresh rate -->
+    <string name="screen_refresh_rate_title">屏幕刷新率</string>
+    <string name="min_refresh_rate_title">最低刷新率</string>
+    <string name="max_refresh_rate_title">最高刷新率</string>
+
+    <!-- Extreme refresh rate -->
+    <string name="extreme_refresh_rate_title">极高刷新率</string>
+    <string name="extreme_refresh_rate_summary">强制所有应用使用最高刷新率</string>
+    <string name="extreme_refresh_rate_warning">这将确保系统选择最高刷新率，忽略用户选择和应用偏好的选项。需要特定刷新率的应用可能运行异常</string>
+
+    <!-- Confirm dialog -->
+    <string name="confirm_before_enable_title">继续启用？</string>
+</resources>

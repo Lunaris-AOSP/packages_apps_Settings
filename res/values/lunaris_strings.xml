@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <!--
      Copyright (C) 2024-2026 Lunaris AOSP
@@ -235,4 +236,8 @@
 
     <!-- Confirm dialog -->
     <string name="confirm_before_enable_title">Continue to enable?</string>
+
+    <!-- Per-app GPU composition -->
+    <string name="use_gpu_for_screen_composition_title">Use GPU for screen composition</string>
+    <string name="use_gpu_for_screen_composition_summary">Select apps that should disable HW overlays while in use</string>
 </resources>

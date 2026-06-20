@@ -76,6 +76,8 @@ android_library {
         "Singularity/res",
     ],
 
+    asset_dirs: ["Singularity/assets"],
+
     optional_uses_libs: ["com.android.extensions.appfunctions"],
     static_libs: [
         // External dependencies
@@ -148,6 +150,10 @@ android_library {
         "androidx.compose.material3_material3-window-size-class",
         "androidx.activity_activity-compose",
         "androidx.core_core-ktx",
+        "tensorflowlite_java",
+        "tflite_support_java",
+        "tensorflow-lite-gpu",
+        "tensorflow-lite-gpu-api",
     ],
 
     plugins: [
@@ -205,6 +211,13 @@ android_app {
     uses_libs: ["org.apache.http.legacy"],
     use_resource_processor: true,
     resource_dirs: [],
+    jni_libs: [
+        "libtensorflowlite_jni",
+        "libtensorflowlite_gpu_jni",
+    ],
+    aaptflags: [
+        "-0 .tflite",
+    ],
     optimize: {
         proguard_flags_files: ["proguard.flags"],
     },

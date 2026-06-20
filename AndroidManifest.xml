@@ -5392,6 +5392,11 @@
                 android:resource="@layout/video_wallpaper" />
         </service>
 
+        <service
+            android:name="org.lunaris.settings.utils.WallpaperSubjectExtractorService"
+            android:exported="false"
+            android:permission="android.permission.MANAGE_USERS" />
+
         <activity
             android:name=".HelpTrampoline"
             android:exported="true"

@@ -239,4 +239,8 @@
     <!-- Per-app GPU composition -->
     <string name="use_gpu_for_screen_composition_title">Use GPU for screen composition</string>
     <string name="use_gpu_for_screen_composition_summary">Select apps that should disable HW overlays while in use</string>
+
+    <!-- Expanded Dark theme exceptions -->
+    <string name="dark_theme_per_app_title">Expanded mode exceptions</string>
+    <string name="dark_theme_per_app_summary">Choose apps that keep their own appearance instead of using expanded Dark theme</string>
 </resources>

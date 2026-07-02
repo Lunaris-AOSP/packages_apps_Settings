@@ -72,6 +72,7 @@ public class ColorModePreferenceFragment extends RadioButtonPickerFragment {
     static final String PAGE_VIEWER_SELECTION_INDEX = "page_viewer_selection_index";
 
     private static final String PROP_DISPLAY_ENGINE_ENABLED = "persist.display.reality.engine.enabled";
+    private static final String PROP_ADVANCED_COLOR_ENABLED = "persist.display.color.advanced.enabled";
 
     private static final int DOT_INDICATOR_SIZE = 12;
     private static final int DOT_INDICATOR_LEFT_PADDING = 6;
@@ -233,6 +234,7 @@ public class ColorModePreferenceFragment extends RadioButtonPickerFragment {
             controller.displayPreference(screen);
         }
         updateDisplayEngineCategoryVisibility(screen);
+        updateAdvancedCategoryVisibility(screen);
     }
 
     private void updateDisplayEngineCategoryVisibility(PreferenceScreen screen) {
@@ -241,6 +243,16 @@ public class ColorModePreferenceFragment extends RadioButtonPickerFragment {
         if (category != null) {
             final boolean enabled =
                     SystemProperties.getBoolean(PROP_DISPLAY_ENGINE_ENABLED, false);
+            category.setVisible(enabled);
+        }
+    }
+
+    private void updateAdvancedCategoryVisibility(PreferenceScreen screen) {
+        final androidx.preference.PreferenceGroup category =
+                screen.findPreference("advanced_category");
+        if (category != null) {
+            final boolean enabled =
+                    SystemProperties.getBoolean(PROP_ADVANCED_COLOR_ENABLED, true);
             category.setVisible(enabled);
         }
     }

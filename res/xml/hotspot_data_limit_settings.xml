@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:settings="http://schemas.android.com/apk/res-auto"
+    android:title="@string/one_time_data_limit_title">
+
+    <org.lunaris.settings.preferences.GlobalSettingSwitchPreference
+        android:key="hotspot_data_limit_enabled"
+        android:title="@string/one_time_data_limit_title"
+        android:defaultValue="false" />
+
+    <Preference
+        android:key="one_time_data_limit_size"
+        android:title="@string/one_time_data_limit_size"
+        android:summary="50.0MB" />
+
+    <Preference
+        android:key="one_time_data_limit_action"
+        android:title="@string/one_time_data_limit_when_exceeded"
+        android:summary="@string/one_time_data_limit_turn_off_notify" />
+
+</PreferenceScreen>

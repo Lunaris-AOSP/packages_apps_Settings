@@ -274,4 +274,11 @@
     <!-- Color saturation -->
     <string name="color_saturation_title">Saturation</string>
     <string name="keywords_color_saturation">color, color temperature, warm, cool, LiveDisplay</string>
+
+    <!-- hotspot data limit -->
+    <string name="one_time_data_limit_title">One-time data limit</string>
+    <string name="one_time_data_limit_size">Size</string>
+    <string name="one_time_data_limit_when_exceeded">When exceeded</string>
+    <string name="one_time_data_limit_turn_off_notify">Turn off and notify</string>
+    <string name="one_time_data_limit_notify_only">Notify only</string>
 </resources>

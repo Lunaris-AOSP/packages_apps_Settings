@@ -88,6 +88,8 @@ public class WifiTetherSettings extends RestrictedDashboardFragment
     @VisibleForTesting
     static final String KEY_WIFI_TETHER_HIDDEN_SSID =
             WifiTetherHiddenSsidPreferenceController.PREF_KEY;
+    @VisibleForTesting
+    static final String KEY_HOTSPOT_DATA_LIMIT = "hotspot_data_limit";
 
     @VisibleForTesting
     SettingsMainSwitchBar mMainSwitchBar;
@@ -307,6 +309,7 @@ public class WifiTetherSettings extends RestrictedDashboardFragment
         controllers.add(new WifiTetherMaximizeCompatibilityPreferenceController(context, listener));
         controllers.add(new WifiTetherClientManagerPreferenceController(context, listener));
         controllers.add(new WifiTetherHiddenSsidPreferenceController(context, listener));
+        controllers.add(new HotspotDataLimitEntryPreferenceController(context, KEY_HOTSPOT_DATA_LIMIT));
         return controllers;
     }
 

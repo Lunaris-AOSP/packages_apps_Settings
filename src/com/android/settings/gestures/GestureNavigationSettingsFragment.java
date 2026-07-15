@@ -134,7 +134,7 @@ public class GestureNavigationSettingsFragment extends DashboardFragment impleme
 
         Action cornerLongSwipeAction = Action.fromSettings(resolver,
                 LineageSettings.System.KEY_CORNER_LONG_SWIPE_ACTION,
-                Action.SEARCH);
+                Action.SYSTEM_POPUP);
         Action edgeLongSwipeAction = Action.fromSettings(resolver,
                 LineageSettings.System.KEY_EDGE_LONG_SWIPE_ACTION,
                 Action.NOTHING);

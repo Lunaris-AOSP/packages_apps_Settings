@@ -20,10 +20,11 @@ import android.app.settings.SettingsEnums;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemProperties;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.SurfaceControl;
 
-import com.android.internal.util.android.SystemRestartUtils;
+import com.android.internal.util.lunaris.SystemRestartUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -123,6 +124,10 @@ public class DisplaySettings extends DashboardFragment {
         if (mBlurAlgorithmPref == null) {
             return;
         }
+        if (!isBlurEnabled(requireContext())) {
+            mBlurAlgorithmPref.setVisible(false);
+            return;
+        }
 
         final SurfaceControl.SupportedBlurAlgorithms algorithms =
                 SurfaceControl.getSupportedBlurAlgorithms();
@@ -163,6 +168,15 @@ public class DisplaySettings extends DashboardFragment {
         });
     }
 
+    private static boolean isBlurEnabled(Context context) {
+        final boolean blurEnabledByDefault =
+                SystemProperties.getBoolean("ro.custom.blur.enable", false);
+        return Settings.Global.getInt(
+                context.getContentResolver(),
+                Settings.Global.DISABLE_WINDOW_BLURS,
+                blurEnabledByDefault ? 0 : 1) != 1;
+    }
+
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(R.xml.display_settings) {
 
@@ -185,6 +199,7 @@ public class DisplaySettings extends DashboardFragment {
                     final SurfaceControl.SupportedBlurAlgorithms blurAlgorithms =
                             SurfaceControl.getSupportedBlurAlgorithms();
                     if (blurAlgorithms == null
+                            || !isBlurEnabled(context)
                             || blurAlgorithms.propertyTokens.length == 0
                             || TextUtils.isEmpty(
                                     SystemProperties.get(

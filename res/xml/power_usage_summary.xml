@@ -73,6 +73,12 @@
             android:summary="@string/idle_manager_summary"
             android:fragment="org.lunaris.settings.fragments.miscellaneous.IdleManagerSettings" />
 
+        <Preference
+            android:fragment="com.android.settings.fuelgauge.powerinsight.PowerInsightSettings"
+            android:key="power_insight"
+            android:title="@string/power_insight_title"
+            android:summary="@string/power_insight_summary" />
+
         <!-- Low Battery Dialogs -->
         <org.lunaris.settings.preferences.SecureSettingSwitchPreference
             android:key="low_battery_dialogs_enabled"

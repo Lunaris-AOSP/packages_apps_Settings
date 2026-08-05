@@ -281,4 +281,63 @@
     <string name="one_time_data_limit_when_exceeded">When exceeded</string>
     <string name="one_time_data_limit_turn_off_notify">Turn off and notify</string>
     <string name="one_time_data_limit_notify_only">Notify only</string>
+
+    <!-- PowerInsight -->
+    <string name="power_insight_title">PowerInsight</string>
+    <string name="power_insight_summary">Advanced battery analytics and real-time monitoring</string>
+    <string name="power_insight_realtime">Real-time</string>
+    <string name="power_insight_history">History</string>
+    <string name="power_insight_current">Current</string>
+    <string name="power_insight_voltage">Voltage</string>
+    <string name="power_insight_temp">Temperature</string>
+    <string name="power_insight_sot">Screen On Time</string>
+    <string name="power_insight_idle">Idle Time</string>
+    <string name="power_insight_deep_sleep">Deep Sleep</string>
+    <string name="power_insight_health">Battery Health</string>
+    <string name="power_insight_cycle_count">Cycle Count</string>
+    <string name="power_insight_reset">Reset Stats</string>
+    <string name="power_insight_reset_confirm">Are you sure you want to reset all battery statistics?</string>
+
+    <!-- PowerInsight Notification -->
+    <string name="power_insight_notif_active">Active: %1$s%%/h</string>
+    <string name="power_insight_notif_idle">Idle: %1$s%%/h</string>
+    <string name="power_insight_notif_screen_on">Screen on: %1$s • %2$s%%</string>
+    <string name="power_insight_notif_screen_off">Screen off: %1$s • %2$s%%</string>
+    <string name="power_insight_notif_awake">Awake: %1$s (%2$s%%)</string>
+    <string name="power_insight_notif_deep_sleep">Deep sleep: %1$s (%2$s%%)</string>
+    <string name="power_insight_notif_charging">Charging</string>
+    <string name="power_insight_notif_discharging">Discharging</string>
+
+    <!-- PowerInsight Settings -->
+    <string name="power_insight_settings_tab">Settings</string>
+    <string name="power_insight_master_toggle">Enable Power Insight</string>
+    <string name="power_insight_master_toggle_summary">Monitor battery usage and health in background</string>
+    <string name="power_insight_notif_toggle">Persistent Notification</string>
+    <string name="power_insight_notif_toggle_summary">Show detailed battery monitoring in notification panel</string>
+    <string name="power_insight_auto_reset_level_title">Auto Reset Threshold</string>
+    <string name="power_insight_auto_reset_level_summary">Automatically reset statistics when battery level reaches a specific percentage</string>
+    <string name="power_insight_auto_reset_level_percent">Reset Percentage</string>
+    <string name="power_insight_reset_plugged">Reset on plugged in</string>
+    <string name="power_insight_reset_plugged_summary">Reset stats when charger is connected</string>
+    <string name="power_insight_reset_reboot">Reset on reboot</string>
+    <string name="power_insight_reset_reboot_summary">Reset stats after system restart</string>
+    <string name="power_insight_manual_reset">Reset Statistics</string>
+    <string name="power_insight_manual_reset_summary">Clear all current battery monitoring data</string>
+    <string name="power_insight_notif_interval">Update Interval</string>
+    <string name="power_insight_notif_interval_summary">Refresh data every %1$d seconds</string>
+    <string name="power_insight_interval_5s">5 seconds</string>
+    <string name="power_insight_interval_10s">10 seconds</string>
+    <string name="power_insight_interval_15s">15 seconds</string>
+    <string name="power_insight_interval_30s">30 seconds</string>
+    <string name="power_insight_interval_60s">60 seconds</string>
+    <string name="power_insight_notif_icon">Notification Icon Style</string>
+    <string name="power_insight_icon_battery">Battery Icon</string>
+    <string name="power_insight_icon_percent">Percentage Only</string>
+    <string name="power_insight_icon_circle_percent">Circle Percentage</string>
+    <string name="power_insight_icon_temp">Temperature</string>
+    <string name="power_insight_icon_percent_temp">Percentage &amp; Temp</string>
+    <string name="power_insight_icon_current">Current (mA)</string>
+    <string name="power_insight_icon_voltage">Voltage</string>
+    <string name="power_insight_icon_power">Power (Watts)</string>
+    <string name="power_insight_no_data">No data available yet</string>
 </resources>

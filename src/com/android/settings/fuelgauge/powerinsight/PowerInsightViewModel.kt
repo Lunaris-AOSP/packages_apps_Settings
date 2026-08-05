@@ -9,6 +9,8 @@ import android.os.ServiceManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import com.android.internal.os.IPowerInsightService
 import com.android.internal.os.PowerInsightAppUsage
 import com.android.internal.os.PowerInsightFlowSample
@@ -64,6 +66,27 @@ class PowerInsightViewModel : ViewModel() {
     private val _resetOnReboot = MutableStateFlow(false)
     val resetOnReboot: StateFlow<Boolean> = _resetOnReboot.asStateFlow()
 
+    private val _batteryAlarmEnabled = MutableStateFlow(false)
+    val batteryAlarmEnabled: StateFlow<Boolean> = _batteryAlarmEnabled.asStateFlow()
+
+    private val _batteryLowThreshold = MutableStateFlow(20)
+    val batteryLowThreshold: StateFlow<Int> = _batteryLowThreshold.asStateFlow()
+
+    private val _batteryHighThreshold = MutableStateFlow(80)
+    val batteryHighThreshold: StateFlow<Int> = _batteryHighThreshold.asStateFlow()
+
+    private val _alarmFrequency = MutableStateFlow(0)
+    val alarmFrequency: StateFlow<Int> = _alarmFrequency.asStateFlow()
+
+    private val _batteryAlarmVibrate = mutableStateOf(false)
+    val batteryAlarmVibrate: State<Boolean> = _batteryAlarmVibrate
+
+    private val _batteryAlarmSound = mutableStateOf<String?>(null)
+    val batteryAlarmSound: State<String?> = _batteryAlarmSound
+
+    private val _fullChargeAlarmEnabled = MutableStateFlow(false)
+    val fullChargeAlarmEnabled: StateFlow<Boolean> = _fullChargeAlarmEnabled.asStateFlow()
+
     init {
         startPolling()
     }
@@ -104,6 +127,13 @@ class PowerInsightViewModel : ViewModel() {
                 _autoResetLevel.value = currentStats.autoResetLevel
                 _resetOnPlugged.value = currentStats.isResetOnPlugged
                 _resetOnReboot.value = currentStats.isResetOnReboot
+                _batteryAlarmEnabled.value = currentStats.isBatteryAlarmEnabled
+                _batteryLowThreshold.value = currentStats.batteryLowThreshold
+                _batteryHighThreshold.value = currentStats.batteryHighThreshold
+                _alarmFrequency.value = currentStats.alarmFrequency
+                _fullChargeAlarmEnabled.value = currentStats.isFullChargeAlarmEnabled
+                _batteryAlarmSound.value = currentStats.batteryAlarmSound
+                _batteryAlarmVibrate.value = currentStats.isBatteryAlarmVibrate
             } catch (e: Exception) {
                 Log.e(TAG, "refreshData failed", e)
             }
@@ -163,6 +193,55 @@ class PowerInsightViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             service?.resetStats()
             refreshData()
+        }
+    }
+
+    fun setBatteryAlarmEnabled(v: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) { 
+            service?.setBatteryAlarmEnabled(v)
+            _batteryAlarmEnabled.value = v
+        }
+    }
+
+    fun setBatteryLowThreshold(v: Int) {
+        viewModelScope.launch(Dispatchers.IO) { 
+            service?.setBatteryLowThreshold(v)
+            _batteryLowThreshold.value = v
+        }
+    }
+
+    fun setBatteryHighThreshold(v: Int) {
+        viewModelScope.launch(Dispatchers.IO) { 
+            service?.setBatteryHighThreshold(v)
+            _batteryHighThreshold.value = v
+        }
+    }
+
+    fun setAlarmFrequency(v: Int) {
+        viewModelScope.launch(Dispatchers.IO) { 
+            service?.setAlarmFrequency(v)
+            _alarmFrequency.value = v
+        }
+    }
+
+    fun setFullChargeAlarmEnabled(v: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) { 
+            service?.setFullChargeAlarmEnabled(v)
+            _fullChargeAlarmEnabled.value = v
+        }
+    }
+
+    fun setBatteryAlarmVibrate(v: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) { 
+            service?.setBatteryAlarmVibrate(v)
+            _batteryAlarmVibrate.value = v
+        }
+    }
+
+    fun setBatteryAlarmSound(uri: String?) {
+        viewModelScope.launch(Dispatchers.IO) { 
+            service?.setBatteryAlarmSound(uri ?: "")
+            _batteryAlarmSound.value = uri
         }
     }
 }

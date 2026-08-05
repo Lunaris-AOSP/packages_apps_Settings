@@ -53,6 +53,17 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.surfaceColorAtElevation
 import com.android.settingslib.spa.framework.theme.SettingsTheme
 import com.android.settings.search.BaseSearchIndexProvider
+import android.content.Context
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.app.Activity
+import android.os.Environment
+import java.io.File
+import java.io.FileOutputStream
+import android.widget.Toast
 
 @SearchIndexable
 class PowerInsightSettings : Fragment() {
@@ -93,6 +104,28 @@ fun PowerInsightRoot(viewModel: PowerInsightViewModel = viewModel()) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var showHealthDetails by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+    val ringtonePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            viewModel.setBatteryAlarmSound(uri?.toString())
+        }
+    }
+
+    fun launchRingtonePicker() {
+        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Alarm Sound")
+            val currentUri = viewModel.batteryAlarmSound.value
+            if (!currentUri.isNullOrEmpty()) {
+                putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(currentUri))
+            }
+        }
+        ringtonePickerLauncher.launch(intent)
+    }
+
     Scaffold(containerColor = Color.Transparent) { padding ->
         Column(
             modifier = Modifier
@@ -114,22 +147,26 @@ fun PowerInsightRoot(viewModel: PowerInsightViewModel = viewModel()) {
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    text = { Text("Realtime") }
+                    text = { Text("Realtime") },
+                    icon = { Icon(Icons.Default.FlashOn, null) }
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text("History") }
+                    text = { Text("History") },
+                    icon = { Icon(Icons.Default.History, null) }
                 )
                 Tab(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    text = { Text("Apps") }
+                    text = { Text("Apps") },
+                    icon = { Icon(Icons.Default.Apps, null) }
                 )
                 Tab(
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 },
-                    text = { Text("Settings") }
+                    text = { Text("Settings") },
+                    icon = { Icon(Icons.Default.Settings, null) }
                 )
             }
 
@@ -138,7 +175,7 @@ fun PowerInsightRoot(viewModel: PowerInsightViewModel = viewModel()) {
                     0 -> RealtimeTab(stats, flow) { showHealthDetails = true }
                     1 -> HistoryTab(history)
                     2 -> AppsTab(apps)
-                    3 -> SettingsTab(viewModel, isEnabled, isNotifEnabled)
+                    3 -> SettingsTab(viewModel, isEnabled, isNotifEnabled, onPickSound = { launchRingtonePicker() })
                 }
             }
         }
@@ -157,9 +194,9 @@ fun MasterToggleCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
+            containerColor = MaterialTheme.colorScheme.surfaceBright
         )
     ) {
         Row(
@@ -170,18 +207,18 @@ fun MasterToggleCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(
-                    modifier = Modifier.size(52.dp),
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primaryContainer
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Default.BatteryChargingFull, null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    Icon(
+                        Icons.Default.BatteryChargingFull, null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(26.dp)
+                    )
                 }
                 Spacer(Modifier.width(18.dp))
                 Column {
@@ -372,16 +409,25 @@ fun AppsTab(apps: List<com.android.internal.os.PowerInsightAppUsage>) {
 }
 
 @Composable
-fun SettingsTab(viewModel: PowerInsightViewModel, isEnabled: Boolean, isNotifEnabled: Boolean) {
+fun SettingsTab(viewModel: PowerInsightViewModel, isEnabled: Boolean, isNotifEnabled: Boolean, onPickSound: () -> Unit) {
     val monitorInterval by viewModel.monitorInterval.collectAsState()
     val resetPlugged by viewModel.resetOnPlugged.collectAsState()
     val resetReboot by viewModel.resetOnReboot.collectAsState()
     val autoResetEnabled by viewModel.autoResetLevelEnabled.collectAsState()
     val autoResetLevel by viewModel.autoResetLevel.collectAsState()
     
+    val batteryAlarmEnabled by viewModel.batteryAlarmEnabled.collectAsState()
+    val batteryLowThreshold by viewModel.batteryLowThreshold.collectAsState()
+    val batteryHighThreshold by viewModel.batteryHighThreshold.collectAsState()
+    val alarmFrequency by viewModel.alarmFrequency.collectAsState()
+    val fullChargeAlarmEnabled by viewModel.fullChargeAlarmEnabled.collectAsState()
+    val alarmSound by viewModel.batteryAlarmSound
+    val alarmVibrate by viewModel.batteryAlarmVibrate
+    
     var showIntervalDialog by remember { mutableStateOf(false) }
     var showResetLevelDialog by remember { mutableStateOf(false) }
     var showResetConfirmDialog by remember { mutableStateOf(false) }
+    var showAlarmFreqDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -446,6 +492,71 @@ fun SettingsTab(viewModel: PowerInsightViewModel, isEnabled: Boolean, isNotifEna
             )
         }
 
+        GroupCard(title = "Alarms") {
+            ToggleRow(
+                title = stringResource(R.string.power_insight_battery_alarm_title),
+                summary = stringResource(R.string.power_insight_battery_alarm_summary),
+                checked = batteryAlarmEnabled,
+                onToggle = { viewModel.setBatteryAlarmEnabled(it) }
+            )
+            
+            if (batteryAlarmEnabled) {
+                Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("$batteryLowThreshold%", style = MaterialTheme.typography.bodyMedium)
+                        Text("$batteryHighThreshold%", style = MaterialTheme.typography.bodyMedium)
+                    }
+                    RangeSlider(
+                        value = batteryLowThreshold.toFloat()..batteryHighThreshold.toFloat(),
+                        onValueChange = { range ->
+                            viewModel.setBatteryLowThreshold(range.start.toInt())
+                            viewModel.setBatteryHighThreshold(range.endInclusive.toInt())
+                        },
+                        valueRange = 1f..99f,
+                        steps = 98,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+                
+                val freqLabels = listOf("Only once", "Every 1% change", "Every 5% change", "Every 10% change", "Every 5 minutes")
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.power_insight_alarm_frequency)) },
+                    supportingContent = { Text(freqLabels.getOrElse(alarmFrequency) { "Unknown" }) },
+                    trailingContent = { Icon(Icons.Rounded.ChevronRight, null) },
+                    modifier = Modifier.clickable { showAlarmFreqDialog = true },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+
+                val context = LocalContext.current
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.power_insight_alarm_sound)) },
+                    supportingContent = { Text(getRingtoneName(context, alarmSound)) },
+                    trailingContent = { Icon(Icons.Rounded.MusicNote, null) },
+                    modifier = Modifier.clickable { onPickSound() },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+
+                ToggleRow(
+                    title = stringResource(R.string.power_insight_alarm_vibrate),
+                    summary = stringResource(R.string.power_insight_alarm_vibrate_summary),
+                    checked = alarmVibrate,
+                    onToggle = { viewModel.setBatteryAlarmVibrate(it) }
+                )
+            }
+            
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+            
+            ToggleRow(
+                title = stringResource(R.string.power_insight_full_charge_alarm),
+                summary = stringResource(R.string.power_insight_full_charge_alarm_summary),
+                checked = fullChargeAlarmEnabled,
+                onToggle = { viewModel.setFullChargeAlarmEnabled(it) }
+            )
+        }
+
         GroupCard {
             ListItem(
                 headlineContent = {
@@ -504,6 +615,17 @@ fun SettingsTab(viewModel: PowerInsightViewModel, isEnabled: Boolean, isNotifEna
                 TextButton(onClick = { showResetConfirmDialog = false }) {
                     Text("Cancel")
                 }
+            }
+        )
+    }
+
+    if (showAlarmFreqDialog) {
+        AlarmFrequencyDialog(
+            current = alarmFrequency,
+            onDismiss = { showAlarmFreqDialog = false },
+            onSelect = { 
+                viewModel.setAlarmFrequency(it)
+                showAlarmFreqDialog = false
             }
         )
     }
@@ -576,6 +698,33 @@ fun IntervalDialog(currentInterval: Int, onDismiss: () -> Unit, onSelect: (Int) 
 }
 
 @Composable
+fun AlarmFrequencyDialog(current: Int, onDismiss: () -> Unit, onSelect: (Int) -> Unit) {
+    val options = listOf("Only once", "Every 1% change", "Every 5% change", "Every 10% change", "Every 5 minutes")
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Alarm frequency") },
+        text = {
+            Column {
+                options.forEachIndexed { index, label ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(index) }
+                            .padding(vertical = 12.dp, horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(selected = current == index, onClick = { onSelect(index) })
+                        Spacer(Modifier.width(12.dp))
+                        Text(label)
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+    )
+}
+
+@Composable
 fun GroupCard(title: String? = null, content: @Composable ColumnScope.() -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         title?.let {
@@ -588,8 +737,8 @@ fun GroupCard(title: String? = null, content: @Composable ColumnScope.() -> Unit
         }
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
         ) {
             Column(content = content)
         }
@@ -775,8 +924,8 @@ fun RealtimeStatsGrid(stats: com.android.internal.os.PowerInsightStats) {
 fun StatCard(modifier: Modifier, title: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f))
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
@@ -850,8 +999,8 @@ fun HealthMetric(label: String, value: String) {
 fun HistoryBucketItem(bucket: com.android.internal.os.PowerInsightHistoryBucket) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
     ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(String.format("%02d:00", bucket.hour), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.width(60.dp))
@@ -876,4 +1025,14 @@ fun formatTime(ms: Long): String {
     val m = s / 60
     val h = m / 60
     return if (h > 0) "${h}h ${m % 60}m" else "${m}m ${s % 60}s"
+}
+
+fun getRingtoneName(context: Context, uriString: String?): String {
+    if (uriString.isNullOrEmpty()) return "None"
+    return try {
+        val uri = Uri.parse(uriString)
+        RingtoneManager.getRingtone(context, uri)?.getTitle(context) ?: "None"
+    } catch (e: Exception) {
+        "None"
+    }
 }

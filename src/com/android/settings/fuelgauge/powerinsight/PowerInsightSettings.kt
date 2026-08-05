@@ -103,6 +103,7 @@ fun PowerInsightRoot(viewModel: PowerInsightViewModel = viewModel()) {
 
     var selectedTab by remember { mutableIntStateOf(0) }
     var showHealthDetails by remember { mutableStateOf(false) }
+    var showSessionDetails by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val ringtonePickerLauncher = rememberLauncherForActivityResult(
@@ -126,56 +127,68 @@ fun PowerInsightRoot(viewModel: PowerInsightViewModel = viewModel()) {
         ringtonePickerLauncher.launch(intent)
     }
 
-    Scaffold(containerColor = Color.Transparent) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            MasterToggleCard(
-                enabled = isEnabled,
-                onToggle = { viewModel.setEnabled(it) },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-
-            TabRow(
-                selectedTabIndex = selectedTab,
-                modifier = Modifier.padding(horizontal = 16.dp),
-                containerColor = Color.Transparent,
-                divider = {}
+    if (showSessionDetails) {
+        androidx.activity.compose.BackHandler {
+            showSessionDetails = false
+        }
+        SessionDetailsScreen(stats = stats, onBack = { showSessionDetails = false })
+    } else {
+        Scaffold(containerColor = Color.Transparent) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
             ) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text("Realtime") },
-                    icon = { Icon(Icons.Default.FlashOn, null) }
+                MasterToggleCard(
+                    enabled = isEnabled,
+                    onToggle = { viewModel.setEnabled(it) },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text("History") },
-                    icon = { Icon(Icons.Default.History, null) }
-                )
-                Tab(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    text = { Text("Apps") },
-                    icon = { Icon(Icons.Default.Apps, null) }
-                )
-                Tab(
-                    selected = selectedTab == 3,
-                    onClick = { selectedTab = 3 },
-                    text = { Text("Settings") },
-                    icon = { Icon(Icons.Default.Settings, null) }
-                )
-            }
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                when (selectedTab) {
-                    0 -> RealtimeTab(stats, flow) { showHealthDetails = true }
-                    1 -> HistoryTab(history)
-                    2 -> AppsTab(apps)
-                    3 -> SettingsTab(viewModel, isEnabled, isNotifEnabled, onPickSound = { launchRingtonePicker() })
+                TabRow(
+                    selectedTabIndex = selectedTab,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    containerColor = Color.Transparent,
+                    divider = {}
+                ) {
+                    Tab(
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 },
+                        text = { Text("Realtime") },
+                        icon = { Icon(Icons.Default.FlashOn, null) }
+                    )
+                    Tab(
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 },
+                        text = { Text("History") },
+                        icon = { Icon(Icons.Default.History, null) }
+                    )
+                    Tab(
+                        selected = selectedTab == 2,
+                        onClick = { selectedTab = 2 },
+                        text = { Text("Apps") },
+                        icon = { Icon(Icons.Default.Apps, null) }
+                    )
+                    Tab(
+                        selected = selectedTab == 3,
+                        onClick = { selectedTab = 3 },
+                        text = { Text("Settings") },
+                        icon = { Icon(Icons.Default.Settings, null) }
+                    )
+                }
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    when (selectedTab) {
+                        0 -> RealtimeTab(
+                            stats = stats,
+                            flow = flow,
+                            onOpenHealth = { showHealthDetails = true },
+                            onOpenSession = { showSessionDetails = true }
+                        )
+                        1 -> HistoryTab(history)
+                        2 -> AppsTab(apps)
+                        3 -> SettingsTab(viewModel, isEnabled, isNotifEnabled, onPickSound = { launchRingtonePicker() })
+                    }
                 }
             }
         }
@@ -246,7 +259,8 @@ fun MasterToggleCard(
 fun RealtimeTab(
     stats: com.android.internal.os.PowerInsightStats,
     flow: List<com.android.internal.os.PowerInsightFlowSample>,
-    onOpenHealth: () -> Unit
+    onOpenHealth: () -> Unit,
+    onOpenSession: () -> Unit
 ) {
     var selectedChartTab by remember { mutableIntStateOf(if (stats.isCharging) 0 else 1) }
 
@@ -293,9 +307,7 @@ fun RealtimeTab(
             }
         }
         
-        RealtimeStatsGrid(stats)
-        
-        BatteryHealthCard(stats, onOpenHealth)
+        RealtimeSummaryGrid(stats, onOpenHealth, onOpenSession)
     }
 }
 
@@ -1036,3 +1048,499 @@ fun getRingtoneName(context: Context, uriString: String?): String {
         "None"
     }
 }
+
+@Composable
+fun RealtimeSummaryGrid(
+    stats: com.android.internal.os.PowerInsightStats,
+    onOpenHealth: () -> Unit,
+    onOpenSession: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Battery Health Tile
+        Card(
+            modifier = Modifier
+                .weight(1f)
+                .clickable { onOpenHealth() },
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    Icons.Default.Favorite,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = Color(0xFFE57373)
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = String.format("%.1f%%", stats.healthPercent),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Battery Health",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        // Session Tile
+        Card(
+            modifier = Modifier
+                .weight(1f)
+                .clickable { onOpenSession() },
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    Icons.Default.Assessment,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = "Details",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Session Stats",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SessionDetailsScreen(
+    stats: com.android.internal.os.PowerInsightStats,
+    onBack: () -> Unit
+) {
+    var selectedSubTab by remember { mutableIntStateOf(if (stats.isCharging) 0 else 1) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Session details", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            // Tab Row
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            ) {
+                TabRow(
+                    selectedTabIndex = selectedSubTab,
+                    containerColor = Color.Transparent,
+                    divider = {},
+                    indicator = { tabPositions ->
+                        SecondaryIndicator(
+                            Modifier.tabIndicatorOffset(tabPositions[selectedSubTab]),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                ) {
+                    Tab(
+                        selected = selectedSubTab == 0,
+                        onClick = { selectedSubTab = 0 },
+                        text = { Text("Charging", fontWeight = FontWeight.SemiBold) }
+                    )
+                    Tab(
+                        selected = selectedSubTab == 1,
+                        onClick = { selectedSubTab = 1 },
+                        text = { Text("Discharging", fontWeight = FontWeight.SemiBold) }
+                    )
+                }
+            }
+
+            if (selectedSubTab == 0) {
+                ChargingSessionContent(stats)
+            } else {
+                DischargingSessionContent(stats)
+            }
+        }
+    }
+}
+
+@Composable
+fun ChargingSessionContent(stats: com.android.internal.os.PowerInsightStats) {
+    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        if (stats.chargingStartTime > 0) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clip(RoundedCornerShape(50))
+                    .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f))
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = "${formatDateTime(stats.chargingStartTime)} → ${if (stats.isCharging) "Ongoing" else formatDateTime(stats.chargingEndTime)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+
+        // Section 1: Total Time
+        SessionSectionHeader(
+            title = "Total time",
+            subtitle = formatDurationPrecise(stats.chargingDurationTime),
+            icon = Icons.Default.AccessTime,
+            iconColor = MaterialTheme.colorScheme.primary
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Charged",
+                value = "${stats.chargingLevelCharged}%",
+                subValue = "${stats.chargingMahCharged} mAh",
+                icon = Icons.Default.BatteryChargingFull,
+                iconColor = Color(0xFF81C784)
+            )
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Charging rate",
+                value = String.format("%.1f%%/h", stats.chargingRatePercentPerHour),
+                subValue = "~${(stats.chargingRatePercentPerHour * stats.totalCapacity / 100).toInt()} mA",
+                icon = Icons.Default.Speed,
+                iconColor = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        // Section 2: Screen On Time
+        SessionSectionHeader(
+            title = "Screen on time",
+            subtitle = formatDurationPrecise(stats.chargingScreenOnTime),
+            icon = Icons.Default.Visibility,
+            iconColor = Color(0xFF81C784)
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Charged",
+                value = String.format("%.1f%%", stats.chargingScreenOnLevelCharged.toFloat()),
+                subValue = "${stats.chargingScreenOnMahCharged} mAh",
+                icon = Icons.Default.BatteryChargingFull,
+                iconColor = Color(0xFF81C784)
+            )
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Charging rate",
+                value = String.format("%.1f%%/h", stats.chargingScreenOnRatePercentPerHour),
+                subValue = "~${(stats.chargingScreenOnRatePercentPerHour * stats.totalCapacity / 100).toInt()} mA",
+                icon = Icons.Default.Speed,
+                iconColor = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        // Section 3: Screen Off Time
+        SessionSectionHeader(
+            title = "Screen off time",
+            subtitle = formatDurationPrecise(stats.chargingScreenOffTime),
+            icon = Icons.Default.VisibilityOff,
+            iconColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Charged",
+                value = String.format("%.1f%%", stats.chargingScreenOffLevelCharged.toFloat()),
+                subValue = "${stats.chargingScreenOffMahCharged} mAh",
+                icon = Icons.Default.BatteryChargingFull,
+                iconColor = Color(0xFF81C784)
+            )
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Charging rate",
+                value = String.format("%.1f%%/h", stats.chargingScreenOffRatePercentPerHour),
+                subValue = "~${(stats.chargingScreenOffRatePercentPerHour * stats.totalCapacity / 100).toInt()} mA",
+                icon = Icons.Default.Speed,
+                iconColor = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+fun DischargingSessionContent(stats: com.android.internal.os.PowerInsightStats) {
+    val totalTime = stats.screenOnTime + stats.screenOffTime
+    val totalUsedPct = stats.batteryDrainScreenOn + stats.batteryDrainScreenOff
+    
+    val dischargingHours = totalTime / 3600000f
+    val totalDischargingRate = if (dischargingHours > 0.01f) totalUsedPct / dischargingHours else 0f
+    val totalUsedMah = (totalUsedPct * stats.totalCapacity / 100f).toInt()
+    val totalDischargingMa = (totalDischargingRate * stats.totalCapacity / 100f).toInt()
+
+    val screenOnHours = stats.screenOnTime / 3600000f
+    val activeRate = if (screenOnHours > 0.01f) stats.batteryDrainScreenOn / screenOnHours else 0f
+    val activeMa = (activeRate * stats.totalCapacity / 100f).toInt()
+
+    val screenOffHours = stats.screenOffTime / 3600000f
+    val idleRate = if (screenOffHours > 0.01f) stats.batteryDrainScreenOff / screenOffHours else 0f
+    val idleMa = (idleRate * stats.totalCapacity / 100f).toInt()
+
+    // Partition Screen Off Drain
+    val screenOffSec = stats.screenOffTime / 1000f
+    val deepSleepSec = stats.deepSleepTime / 1000f
+    val awakeSec = Math.max(0f, screenOffSec - deepSleepSec)
+    
+    val deepSleepWeight = 1.0f
+    val awakeWeight = 5.0f
+    val totalFactor = (deepSleepSec * deepSleepWeight) + (awakeSec * awakeWeight)
+    
+    val screenOffMah = stats.batteryDrainScreenOff * stats.totalCapacity / 100f
+    val deepSleepMah = if (totalFactor > 0) (deepSleepSec * deepSleepWeight / totalFactor) * screenOffMah else 0f
+    val awakeMah = Math.max(0f, screenOffMah - deepSleepMah)
+    
+    val deepSleepPct = if (stats.totalCapacity > 0) (deepSleepMah * 100f / stats.totalCapacity) else 0f
+    val awakePct = if (stats.totalCapacity > 0) (awakeMah * 100f / stats.totalCapacity) else 0f
+
+    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        // Section 1: Total Time
+        SessionSectionHeader(
+            title = "Total time",
+            subtitle = formatDurationPrecise(totalTime),
+            icon = Icons.Default.AccessTime,
+            iconColor = MaterialTheme.colorScheme.primary
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Used",
+                value = "${totalUsedPct}%",
+                subValue = "${totalUsedMah} mAh",
+                icon = Icons.Default.TrendingDown,
+                iconColor = Color(0xFFE57373)
+            )
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Discharging rate",
+                value = String.format("%.1f%%/h", totalDischargingRate),
+                subValue = "~${totalDischargingMa} mA",
+                icon = Icons.Default.Speed,
+                iconColor = Color(0xFFE57373)
+            )
+        }
+
+        // Section 2: Screen On Time
+        SessionSectionHeader(
+            title = "Screen on time",
+            subtitle = formatDurationPrecise(stats.screenOnTime),
+            icon = Icons.Default.Visibility,
+            iconColor = Color(0xFF81C784),
+            showInfo = true
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Used",
+                value = String.format("%.1f%%", stats.batteryDrainScreenOn.toFloat()),
+                subValue = "${(stats.batteryDrainScreenOn * stats.totalCapacity / 100)} mAh",
+                icon = Icons.Default.TrendingDown,
+                iconColor = Color(0xFFE57373)
+            )
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Discharging rate",
+                value = String.format("%.1f%%/h", activeRate),
+                subValue = "~${activeMa} mA",
+                icon = Icons.Default.Speed,
+                iconColor = Color(0xFFE57373)
+            )
+        }
+
+        // Section 3: Screen Off Time
+        SessionSectionHeader(
+            title = "Screen off time",
+            subtitle = formatDurationPrecise(stats.screenOffTime),
+            icon = Icons.Default.VisibilityOff,
+            iconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            showInfo = true
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Used",
+                value = String.format("%.1f%%", stats.batteryDrainScreenOff.toFloat()),
+                subValue = "${(stats.batteryDrainScreenOff * stats.totalCapacity / 100)} mAh",
+                icon = Icons.Default.TrendingDown,
+                iconColor = Color(0xFFE57373)
+            )
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Discharging rate",
+                value = String.format("%.1f%%/h", idleRate),
+                subValue = "~${idleMa} mA",
+                icon = Icons.Default.Speed,
+                iconColor = Color(0xFFE57373)
+            )
+        }
+
+        // Section 4: Deep Sleep & Awake
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Deep sleep",
+                value = formatDurationPrecise(stats.deepSleepTime),
+                subValue = "${deepSleepMah.toInt()} mAh (${String.format("%.1f%%", deepSleepPct)})",
+                icon = Icons.Default.ModeNight,
+                iconColor = Color(0xFF9575CD),
+                showInfo = true
+            )
+            MetricCard(
+                modifier = Modifier.weight(1f),
+                label = "Held awake",
+                value = formatDurationPrecise(stats.screenOffTime - stats.deepSleepTime),
+                subValue = "${awakeMah.toInt()} mAh (${String.format("%.1f%%", awakePct)})",
+                icon = Icons.Default.Warning,
+                iconColor = Color(0xFFFFB74D),
+                showInfo = true
+            )
+        }
+    }
+}
+
+@Composable
+fun SessionSectionHeader(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    iconColor: Color = MaterialTheme.colorScheme.primary,
+    showInfo: Boolean = false
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(iconColor.copy(alpha = 0.15f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = iconColor
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                if (showInfo) {
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                }
+            }
+            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+fun MetricCard(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    subValue: String,
+    icon: ImageVector? = null,
+    iconColor: Color = MaterialTheme.colorScheme.primary,
+    showInfo: Boolean = false
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = iconColor
+                    )
+                } else if (showInfo) {
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = null,
+                        modifier = Modifier.size(12.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold)
+            Text(subValue, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+fun formatDurationPrecise(ms: Long): String {
+    val totalSecs = ms / 1000
+    val s = totalSecs % 60
+    val totalMins = totalSecs / 60
+    val m = totalMins % 60
+    val h = totalMins / 60
+    
+    return when {
+        h > 0 -> "${h}h ${m}m ${s}s"
+        m > 0 -> "${m}m ${s}s"
+        else -> "${s}s"
+    }
+}
+
+fun formatDateTime(timestamp: Long): String {
+    if (timestamp <= 0) return "N/A"
+    val sdf = java.text.SimpleDateFormat("hh:mm a dd MMM", java.util.Locale.getDefault())
+    return sdf.format(java.util.Date(timestamp))
+}
+

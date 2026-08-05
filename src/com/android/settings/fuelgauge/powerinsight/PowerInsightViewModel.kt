@@ -106,7 +106,8 @@ class PowerInsightViewModel : ViewModel() {
                 }
                 refreshData()
                 _isLoading.value = false
-                delay(1000)
+                val interval = _monitorInterval.value.toLong().coerceIn(1000L, 60000L)
+                delay(interval)
             }
         }
     }

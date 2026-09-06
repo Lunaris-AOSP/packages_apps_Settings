@@ -285,69 +285,122 @@
     <!-- PowerInsight -->
     <string name="power_insight_title">PowerInsight</string>
     <string name="power_insight_summary">Advanced battery analytics and real-time monitoring</string>
-    <string name="power_insight_realtime">Real-time</string>
-    <string name="power_insight_history">History</string>
-    <string name="power_insight_current">Current</string>
-    <string name="power_insight_voltage">Voltage</string>
-    <string name="power_insight_temp">Temperature</string>
-    <string name="power_insight_sot">Screen On Time</string>
-    <string name="power_insight_idle">Idle Time</string>
-    <string name="power_insight_deep_sleep">Deep Sleep</string>
-    <string name="power_insight_health">Battery Health</string>
-    <string name="power_insight_cycle_count">Cycle Count</string>
-    <string name="power_insight_reset">Reset Stats</string>
-    <string name="power_insight_reset_confirm">Are you sure you want to reset all battery statistics?</string>
-
-    <!-- PowerInsight Notification -->
-    <string name="power_insight_notif_active">Active: %1$s%%/h</string>
-    <string name="power_insight_notif_idle">Idle: %1$s%%/h</string>
-    <string name="power_insight_notif_screen_on">Screen on: %1$s • %2$s%%</string>
-    <string name="power_insight_notif_screen_off">Screen off: %1$s • %2$s%%</string>
-    <string name="power_insight_notif_awake">Awake: %1$s (%2$s%%)</string>
-    <string name="power_insight_notif_deep_sleep">Deep sleep: %1$s (%2$s%%)</string>
-    <string name="power_insight_notif_charging">Charging</string>
-    <string name="power_insight_notif_discharging">Discharging</string>
-
-    <!-- PowerInsight Settings -->
-    <string name="power_insight_settings_tab">Settings</string>
-    <string name="power_insight_master_toggle">Enable Power Insight</string>
-    <string name="power_insight_master_toggle_summary">Monitor battery usage and health in background</string>
-    <string name="power_insight_notif_toggle">Persistent Notification</string>
-    <string name="power_insight_notif_toggle_summary">Show detailed battery monitoring in notification panel</string>
-    <string name="power_insight_auto_reset_level_title">Auto Reset Threshold</string>
-    <string name="power_insight_auto_reset_level_summary">Automatically reset statistics when battery level reaches a specific percentage</string>
-    <string name="power_insight_auto_reset_level_percent">Reset Percentage</string>
-    <string name="power_insight_reset_plugged">Reset on plugged in</string>
-    <string name="power_insight_reset_plugged_summary">Reset stats when charger is connected</string>
-    <string name="power_insight_reset_reboot">Reset on reboot</string>
-    <string name="power_insight_reset_reboot_summary">Reset stats after system restart</string>
-    <string name="power_insight_manual_reset">Reset Statistics</string>
-    <string name="power_insight_manual_reset_summary">Clear all current battery monitoring data</string>
-    <string name="power_insight_notif_interval">Update Interval</string>
-    <string name="power_insight_notif_interval_summary">Refresh data every %1$d seconds</string>
+    <string name="power_insight_tab_live">Live</string>
+    <string name="power_insight_tab_history">History</string>
+    <string name="power_insight_tab_apps">Apps</string>
+    <string name="power_insight_tab_settings">Settings</string>
+    <string name="power_insight_session_details">Session details</string>
+    <string name="power_insight_navigate_up">Navigate up</string>
+    <string name="power_insight_status_service_unavailable">Service unavailable</string>
+    <string name="power_insight_status_paused">Monitoring paused</string>
+    <string name="power_insight_status_charging">Charging · monitoring</string>
+    <string name="power_insight_status_active">Monitoring active</string>
+    <string name="power_insight_service_unavailable_title">Power Insight service unavailable</string>
+    <string name="power_insight_service_unavailable_body">The power_insight system service is not running, so no telemetry can be read. It will reconnect automatically if the service starts.</string>
+    <string name="power_insight_mode_charging">Charging</string>
+    <string name="power_insight_mode_discharging">Discharging</string>
+    <string name="power_insight_samples_none">no samples</string>
+    <string name="power_insight_samples_count"><xliff:g id="count" example="60">%1$d</xliff:g> samples</string>
+    <string name="power_insight_chart_empty_charging">No charging samples in this window</string>
+    <string name="power_insight_chart_empty_discharging">No discharging samples in this window</string>
+    <string name="power_insight_stat_average">Average</string>
+    <string name="power_insight_stat_minimum">Minimum</string>
+    <string name="power_insight_stat_maximum">Maximum</string>
+    <string name="power_insight_axis_oldest">oldest</string>
+    <string name="power_insight_axis_now">now</string>
+    <string name="power_insight_chart_a11y_charging">Charging current trace over <xliff:g id="samples" example="60">%1$d</xliff:g> samples. Average <xliff:g id="average" example="420">%2$d</xliff:g> milliamps, minimum <xliff:g id="minimum" example="80">%3$d</xliff:g>, maximum <xliff:g id="maximum" example="1200">%4$d</xliff:g>.</string>
+    <string name="power_insight_chart_a11y_discharging">Discharging current trace over <xliff:g id="samples" example="60">%1$d</xliff:g> samples. Average <xliff:g id="average" example="420">%2$d</xliff:g> milliamps, minimum <xliff:g id="minimum" example="80">%3$d</xliff:g>, maximum <xliff:g id="maximum" example="1200">%4$d</xliff:g>.</string>
+    <string name="power_insight_battery_health">Battery health</string>
+    <string name="power_insight_cycles"><xliff:g id="count" example="412">%1$d</xliff:g> cycles</string>
+    <string name="power_insight_session">Session</string>
+    <string name="power_insight_session_value">Details</string>
+    <string name="power_insight_session_sub">Charge &amp; discharge</string>
+    <string name="power_insight_active_drain">Active drain</string>
+    <string name="power_insight_idle_drain">Idle drain</string>
+    <string name="power_insight_screen_on_lower">screen on</string>
+    <string name="power_insight_screen_off_lower">screen off</string>
+    <string name="power_insight_screen_on">Screen on</string>
+    <string name="power_insight_screen_off">Screen off</string>
+    <string name="power_insight_deep_sleep">Deep sleep</string>
+    <string name="power_insight_held_awake">Held awake</string>
+    <string name="power_insight_total_time">Total time</string>
+    <string name="power_insight_history_empty_title">No history yet</string>
+    <string name="power_insight_history_empty_body">Hourly breakdowns appear once the monitor has been running for a full hour.</string>
+    <string name="power_insight_drain_by_hour">Drain by hour</string>
+    <string name="power_insight_screen_on_duration">Screen on <xliff:g id="duration" example="42m 10s">%1$s</xliff:g></string>
+    <string name="power_insight_drain_percent">−<xliff:g id="percent" example="4">%1$d</xliff:g>%%</string>
+    <string name="power_insight_peak_percent">peak <xliff:g id="percent" example="9">%1$d</xliff:g>%%</string>
+    <string name="power_insight_hourly_a11y">Hourly battery drain across <xliff:g id="hours" example="24">%1$d</xliff:g> hours. Peak <xliff:g id="percent" example="9">%2$d</xliff:g> percent at <xliff:g id="hour" example="14:00">%3$s</xliff:g>.</string>
+    <string name="power_insight_apps_empty_title">No app usage yet</string>
+    <string name="power_insight_apps_empty_body">Per-app attribution builds up while the device runs on battery after a charge.</string>
+    <string name="power_insight_since_last_charge">Since last charge</string>
+    <string name="power_insight_apps_summary"><xliff:g id="count" example="18">%1$d</xliff:g> apps · <xliff:g id="total" example="840.5 mAh">%2$s</xliff:g> total</string>
+    <string name="power_insight_app_row_detail"><xliff:g id="share" example="12">%1$d</xliff:g>%% · fg <xliff:g id="foreground" example="12m 04s">%2$s</xliff:g> · bg <xliff:g id="background" example="3h 20m">%3$s</xliff:g></string>
+    <string name="power_insight_unknown_app">Unknown</string>
+    <string name="power_insight_session_window"><xliff:g id="start" example="9:14 AM, 3 Sep">%1$s</xliff:g>  →  <xliff:g id="end" example="10:02 AM, 3 Sep">%2$s</xliff:g></string>
+    <string name="power_insight_ongoing">ongoing</string>
+    <string name="power_insight_charged">Charged</string>
+    <string name="power_insight_used">Used</string>
+    <string name="power_insight_charging_rate">Charging rate</string>
+    <string name="power_insight_discharge_rate">Discharge rate</string>
+    <string name="power_insight_approx">≈ <xliff:g id="value" example="480 mA">%1$s</xliff:g></string>
+    <string name="power_insight_mah_percent"><xliff:g id="mah" example="120 mAh">%1$s</xliff:g> · <xliff:g id="percent" example="2.4%">%2$s</xliff:g></string>
+    <string name="power_insight_split_estimate_note">Screen-off drain is apportioned between deep sleep and awake time using a 1:5 weighting, so it is an estimate rather than a measured split.</string>
+    <string name="power_insight_design_capacity">Design capacity</string>
+    <string name="power_insight_full_charge_capacity">Full-charge capacity</string>
+    <string name="power_insight_reported_status">Reported status</string>
+    <string name="power_insight_unknown">Unknown</string>
+    <string name="power_insight_capacity_health">Capacity health</string>
+    <string name="power_insight_cycle_count">Cycle count</string>
+    <string name="power_insight_cycle_health">Cycle health</string>
+    <string name="power_insight_health_weighting_note">Weighted as 70%% capacity + 30%% cycles.</string>
+    <string name="power_insight_overall">Overall</string>
+    <string name="power_insight_health_a11y">Overall battery health <xliff:g id="percent" example="87">%1$d</xliff:g> percent</string>
+    <string name="power_insight_group_general">General</string>
+    <string name="power_insight_group_auto_reset">Auto reset</string>
+    <string name="power_insight_group_alarms">Alarms</string>
+    <string name="power_insight_notif_interval">Update interval</string>
+    <string name="power_insight_notif_interval_summary">Every <xliff:g id="seconds" example="10">%1$d</xliff:g> seconds</string>
+    <string name="power_insight_notif_toggle">Show notification</string>
+    <string name="power_insight_notif_toggle_summary">Keep current draw and battery level in the status bar</string>
     <string name="power_insight_interval_5s">5 seconds</string>
     <string name="power_insight_interval_10s">10 seconds</string>
     <string name="power_insight_interval_15s">15 seconds</string>
     <string name="power_insight_interval_30s">30 seconds</string>
     <string name="power_insight_interval_60s">60 seconds</string>
-    <string name="power_insight_notif_icon">Notification Icon Style</string>
-    <string name="power_insight_icon_battery">Battery Icon</string>
-    <string name="power_insight_icon_percent">Percentage Only</string>
-    <string name="power_insight_icon_circle_percent">Circle Percentage</string>
-    <string name="power_insight_icon_temp">Temperature</string>
-    <string name="power_insight_icon_percent_temp">Percentage &amp; Temp</string>
-    <string name="power_insight_icon_current">Current (mA)</string>
-    <string name="power_insight_icon_voltage">Voltage</string>
-    <string name="power_insight_icon_power">Power (Watts)</string>
-    <string name="power_insight_no_data">No data available yet</string>
+    <string name="power_insight_auto_reset_level_title">Reset at battery level</string>
+    <string name="power_insight_auto_reset_level_summary">Clear statistics when charging reaches the level below</string>
+    <string name="power_insight_auto_reset_level_percent">Reset level</string>
+    <string name="power_insight_reset_plugged">Reset when plugged in</string>
+    <string name="power_insight_reset_plugged_summary">Start a new session each time a charger is connected</string>
+    <string name="power_insight_reset_reboot">Reset on restart</string>
+    <string name="power_insight_reset_reboot_summary">Discard statistics when the device restarts</string>
     <string name="power_insight_battery_alarm_title">Battery level alarm</string>
-    <string name="power_insight_battery_alarm_summary">Enable battery level alerts for timely notifications when specific thresholds are reached.</string>
-    <string name="power_insight_alarm_frequency">Alarm frequency</string>
+    <string name="power_insight_battery_alarm_summary">Alert when the battery passes the levels below</string>
+    <string name="power_insight_alarm_frequency">Repeat</string>
     <string name="power_insight_alarm_sound">Alarm sound</string>
-    <string name="power_insight_alarm_vibrate">Play vibration</string>
-    <string name="power_insight_alarm_vibrate_summary">Trigger a long vibration pattern when the alarm goes off.</string>
-    <string name="power_insight_full_charge_alarm">Notify when fully charged</string>
-    <string name="power_insight_full_charge_alarm_summary">Get a notification when the battery is fully charged. Devices are usually fully charged 30mins to 1h after the device reaches 100%</string>
+    <string name="power_insight_alarm_vibrate">Vibrate</string>
+    <string name="power_insight_alarm_vibrate_summary">Vibrate as well as playing the alarm sound</string>
+    <string name="power_insight_full_charge_alarm">Full charge alarm</string>
+    <string name="power_insight_full_charge_alarm_summary">Alert when the battery reaches 100%%</string>
+    <string name="power_insight_manual_reset">Reset statistics</string>
+    <string name="power_insight_manual_reset_summary">Clear all usage, attribution, and history data</string>
+    <string name="power_insight_alarm_freq_once">Only once</string>
+    <string name="power_insight_alarm_freq_1">Every 1%% change</string>
+    <string name="power_insight_alarm_freq_5">Every 5%% change</string>
+    <string name="power_insight_alarm_freq_10">Every 10%% change</string>
+    <string name="power_insight_alarm_freq_5min">Every 5 minutes</string>
+    <string name="power_insight_threshold_low">Low <xliff:g id="percent" example="20">%1$d</xliff:g>%%</string>
+    <string name="power_insight_threshold_high">High <xliff:g id="percent" example="80">%1$d</xliff:g>%%</string>
+    <string name="power_insight_reset_confirm_title">Reset statistics?</string>
+    <string name="power_insight_reset_confirm_body">This clears all tracked battery usage, per-app attribution, and flow history. It cannot be undone.</string>
+    <string name="power_insight_reset">Reset</string>
+    <string name="power_insight_cancel">Cancel</string>
+    <string name="power_insight_confirm">Confirm</string>
+    <string name="power_insight_close">Close</string>
+    <string name="power_insight_none">None</string>
+    <string name="power_insight_percent_value"><xliff:g id="percent" example="80">%1$d</xliff:g>%%</string>
+    <string name="power_insight_placeholder_dash">—</string>
 
     <!-- Reading Mode per-app settings -->
     <string name="reading_mode_apps_settings_title">Reading mode</string>

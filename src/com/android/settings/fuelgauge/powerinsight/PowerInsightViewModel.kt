@@ -1,5 +1,6 @@
 /*
  * SPDX-FileCopyrightText: 2026 kenway214
+ * SPDX-FileCopyrightText: Lunaris AOSP
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -7,242 +8,270 @@ package com.android.settings.fuelgauge.powerinsight
 
 import android.os.ServiceManager
 import android.util.Log
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import com.android.internal.os.IPowerInsightService
 import com.android.internal.os.PowerInsightAppUsage
 import com.android.internal.os.PowerInsightFlowSample
 import com.android.internal.os.PowerInsightHistoryBucket
 import com.android.internal.os.PowerInsightStats
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicInteger
+
+@Immutable
+data class PowerInsightConfig(
+    val notificationEnabled: Boolean = false,
+    val monitorInterval: Int = 10_000,
+    val autoResetLevelEnabled: Boolean = false,
+    val autoResetLevel: Int = 100,
+    val resetOnPlugged: Boolean = false,
+    val resetOnReboot: Boolean = false,
+    val batteryAlarmEnabled: Boolean = false,
+    val batteryLowThreshold: Int = 20,
+    val batteryHighThreshold: Int = 80,
+    val alarmFrequency: Int = 0,
+    val alarmSound: String? = null,
+    val alarmVibrate: Boolean = false,
+    val fullChargeAlarmEnabled: Boolean = false,
+)
+
+@Immutable
+data class PowerInsightUiState(
+    val loading: Boolean = true,
+    val serviceAvailable: Boolean = false,
+    val monitoringEnabled: Boolean = false,
+    val stats: PowerInsightStats = PowerInsightStats(),
+    val flow: List<PowerInsightFlowSample> = emptyList(),
+    val history: List<PowerInsightHistoryBucket> = emptyList(),
+    val apps: List<PowerInsightAppUsage> = emptyList(),
+    val config: PowerInsightConfig = PowerInsightConfig(),
+)
 
 class PowerInsightViewModel : ViewModel() {
-    companion object {
-        private const val TAG = "PowerInsightVM"
+
+    private companion object {
+        const val TAG = "PowerInsightVM"
+        const val SERVICE_NAME = "power_insight"
+
+        const val FAST_POLL_MS = 2_000L
+
+        const val SLOW_POLL_MS = 15_000L
+
+        const val FLOW_SAMPLE_COUNT = 60
+        const val APP_LIMIT = 50
     }
 
+    @Volatile
     private var service: IPowerInsightService? = null
 
-    private val _stats = MutableStateFlow(PowerInsightStats())
-    val stats: StateFlow<PowerInsightStats> = _stats.asStateFlow()
+    private val _state = MutableStateFlow(PowerInsightUiState())
+    val state: StateFlow<PowerInsightUiState> = _state.asStateFlow()
 
-    private val _flow = MutableStateFlow<List<PowerInsightFlowSample>>(emptyList())
-    val flow: StateFlow<List<PowerInsightFlowSample>> = _flow.asStateFlow()
-
-    private val _history = MutableStateFlow<List<PowerInsightHistoryBucket>>(emptyList())
-    val history: StateFlow<List<PowerInsightHistoryBucket>> = _history.asStateFlow()
-    private val _apps = MutableStateFlow<List<PowerInsightAppUsage>>(emptyList())
-    val apps: StateFlow<List<PowerInsightAppUsage>> = _apps.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    private val _isEnabled = MutableStateFlow(false)
-    val isEnabled: StateFlow<Boolean> = _isEnabled.asStateFlow()
-
-    private val _isNotifEnabled = MutableStateFlow(false)
-    val isNotifEnabled: StateFlow<Boolean> = _isNotifEnabled.asStateFlow()
-
-    private val _monitorInterval = MutableStateFlow(10000)
-    val monitorInterval: StateFlow<Int> = _monitorInterval.asStateFlow()
-
-    private val _autoResetLevelEnabled = MutableStateFlow(false)
-    val autoResetLevelEnabled: StateFlow<Boolean> = _autoResetLevelEnabled.asStateFlow()
-
-    private val _autoResetLevel = MutableStateFlow(100)
-    val autoResetLevel: StateFlow<Int> = _autoResetLevel.asStateFlow()
-
-    private val _resetOnPlugged = MutableStateFlow(false)
-    val resetOnPlugged: StateFlow<Boolean> = _resetOnPlugged.asStateFlow()
-
-    private val _resetOnReboot = MutableStateFlow(false)
-    val resetOnReboot: StateFlow<Boolean> = _resetOnReboot.asStateFlow()
-
-    private val _batteryAlarmEnabled = MutableStateFlow(false)
-    val batteryAlarmEnabled: StateFlow<Boolean> = _batteryAlarmEnabled.asStateFlow()
-
-    private val _batteryLowThreshold = MutableStateFlow(20)
-    val batteryLowThreshold: StateFlow<Int> = _batteryLowThreshold.asStateFlow()
-
-    private val _batteryHighThreshold = MutableStateFlow(80)
-    val batteryHighThreshold: StateFlow<Int> = _batteryHighThreshold.asStateFlow()
-
-    private val _alarmFrequency = MutableStateFlow(0)
-    val alarmFrequency: StateFlow<Int> = _alarmFrequency.asStateFlow()
-
-    private val _batteryAlarmVibrate = mutableStateOf(false)
-    val batteryAlarmVibrate: State<Boolean> = _batteryAlarmVibrate
-
-    private val _batteryAlarmSound = mutableStateOf<String?>(null)
-    val batteryAlarmSound: State<String?> = _batteryAlarmSound
-
-    private val _fullChargeAlarmEnabled = MutableStateFlow(false)
-    val fullChargeAlarmEnabled: StateFlow<Boolean> = _fullChargeAlarmEnabled.asStateFlow()
+    private val writeGeneration = AtomicInteger(0)
 
     init {
-        startPolling()
-    }
-
-    private fun startPolling() {
         viewModelScope.launch {
-            _isLoading.value = true
-            while (true) {
-                if (service == null) {
-                    val binder = ServiceManager.checkService("power_insight")
-                    if (binder != null) {
-                        service = IPowerInsightService.Stub.asInterface(binder)
-                        Log.i(TAG, "Connected to power_insight binder")
-                    } else {
-                        Log.w(TAG, "power_insight binder is null")
-                    }
-                }
-                refreshData()
-                _isLoading.value = false
-                val interval = _monitorInterval.value.toLong().coerceIn(1000L, 60000L)
-                delay(interval)
+            _state.subscriptionCount
+                .map { it > 0 }
+                .distinctUntilChanged()
+                .collectLatest { active -> if (active) runPolling() }
+        }
+    }
+
+    private suspend fun runPolling() {
+        var lastSlowPoll = 0L
+        while (true) {
+            connectIfNeeded()
+            val now = System.currentTimeMillis()
+            val includeSlow = now - lastSlowPoll >= SLOW_POLL_MS
+            if (includeSlow) lastSlowPoll = now
+            refresh(includeSlow = includeSlow)
+            delay(FAST_POLL_MS)
+        }
+    }
+
+    private suspend fun connectIfNeeded() {
+        if (service != null) return
+        withContext(Dispatchers.IO) {
+            val binder = runCatching { ServiceManager.checkService(SERVICE_NAME) }.getOrNull()
+            if (binder == null) {
+                Log.w(TAG, "$SERVICE_NAME binder unavailable")
+                _state.update { it.copy(loading = false, serviceAvailable = false) }
+            } else {
+                service = IPowerInsightService.Stub.asInterface(binder)
+                Log.i(TAG, "Connected to $SERVICE_NAME")
             }
         }
     }
 
-    private suspend fun refreshData() = withContext(Dispatchers.IO) {
-        service?.let { s ->
+    private suspend fun refresh(includeSlow: Boolean) = withContext(Dispatchers.IO) {
+        val svc = service ?: return@withContext
+        try {
+            val generation = writeGeneration.get()
+            val stats = svc.batteryState
+            val flow = svc.getCurrentFlow(FLOW_SAMPLE_COUNT).toList()
+            val enabled = svc.isEnabled
+            val history = if (includeSlow) svc.history.toList() else null
+            val apps = if (includeSlow) svc.getAppUsageSinceLastCharge(APP_LIMIT).toList() else null
+
+            val stale = writeGeneration.get() != generation
+
+            _state.update { current ->
+                current.copy(
+                    loading = false,
+                    serviceAvailable = true,
+                    monitoringEnabled = if (stale) current.monitoringEnabled else enabled,
+                    stats = stats,
+                    flow = flow,
+                    history = history ?: current.history,
+                    apps = apps ?: current.apps,
+                    config = if (stale) current.config else stats.toConfig(),
+                )
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.e(TAG, "refresh failed", e)
+            service = null
+            _state.update { it.copy(loading = false, serviceAvailable = false) }
+        }
+    }
+
+    private fun PowerInsightStats.toConfig() = PowerInsightConfig(
+        notificationEnabled = isNotificationEnabled,
+        monitorInterval = monitorInterval,
+        autoResetLevelEnabled = isAutoResetLevelEnabled,
+        autoResetLevel = autoResetLevel,
+        resetOnPlugged = isResetOnPlugged,
+        resetOnReboot = isResetOnReboot,
+        batteryAlarmEnabled = isBatteryAlarmEnabled,
+        batteryLowThreshold = batteryLowThreshold,
+        batteryHighThreshold = batteryHighThreshold,
+        alarmFrequency = alarmFrequency,
+        alarmSound = batteryAlarmSound,
+        alarmVibrate = isBatteryAlarmVibrate,
+        fullChargeAlarmEnabled = isFullChargeAlarmEnabled,
+    )
+
+    private fun commit(
+        optimistic: (PowerInsightConfig) -> PowerInsightConfig,
+        push: (IPowerInsightService) -> Unit,
+    ) {
+        writeGeneration.incrementAndGet()
+        _state.update { it.copy(config = optimistic(it.config)) }
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                val currentStats = s.batteryState
-                _stats.value = currentStats
-                _flow.value = s.getCurrentFlow(60).toList()
-                _history.value = s.history.toList()
-                _apps.value = s.getAppUsageSinceLastCharge(50).toList()
-                _isEnabled.value = s.isEnabled
-                
-                _isNotifEnabled.value = currentStats.isNotificationEnabled
-                _monitorInterval.value = currentStats.monitorInterval
-                _autoResetLevelEnabled.value = currentStats.isAutoResetLevelEnabled
-                _autoResetLevel.value = currentStats.autoResetLevel
-                _resetOnPlugged.value = currentStats.isResetOnPlugged
-                _resetOnReboot.value = currentStats.isResetOnReboot
-                _batteryAlarmEnabled.value = currentStats.isBatteryAlarmEnabled
-                _batteryLowThreshold.value = currentStats.batteryLowThreshold
-                _batteryHighThreshold.value = currentStats.batteryHighThreshold
-                _alarmFrequency.value = currentStats.alarmFrequency
-                _fullChargeAlarmEnabled.value = currentStats.isFullChargeAlarmEnabled
-                _batteryAlarmSound.value = currentStats.batteryAlarmSound
-                _batteryAlarmVibrate.value = currentStats.isBatteryAlarmVibrate
+                service?.let(push)
             } catch (e: Exception) {
-                Log.e(TAG, "refreshData failed", e)
+                Log.e(TAG, "service write failed", e)
+            } finally {
+                writeGeneration.incrementAndGet()
             }
         }
     }
 
-    fun setEnabled(v: Boolean) {
+    fun setEnabled(value: Boolean) {
+        writeGeneration.incrementAndGet()
+        _state.update { it.copy(monitoringEnabled = value) }
         viewModelScope.launch(Dispatchers.IO) {
-            service?.isEnabled = v
-            _isEnabled.value = v
+            try {
+                service?.isEnabled = value
+            } catch (e: Exception) {
+                Log.e(TAG, "setEnabled failed", e)
+            } finally {
+                writeGeneration.incrementAndGet()
+            }
         }
     }
 
-    fun setNotifEnabled(v: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            service?.isNotificationEnabled = v
-            _isNotifEnabled.value = v
-        }
+    fun setNotificationEnabled(value: Boolean) = commit(
+        { it.copy(notificationEnabled = value) },
+        { it.isNotificationEnabled = value },
+    )
+
+    fun setMonitorInterval(value: Int) = commit(
+        { it.copy(monitorInterval = value) },
+        { it.monitorInterval = value },
+    )
+
+    fun setAutoResetLevelEnabled(value: Boolean) = commit(
+        { it.copy(autoResetLevelEnabled = value) },
+        { it.setAutoResetLevelEnabled(value) },
+    )
+
+    fun setAutoResetLevel(value: Int) {
+        val clamped = value.coerceIn(1, 100)
+        commit({ it.copy(autoResetLevel = clamped) }, { it.setAutoResetLevel(clamped) })
     }
 
-    fun setMonitorInterval(v: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            service?.monitorInterval = v
-            _monitorInterval.value = v
-        }
+    fun setResetOnPlugged(value: Boolean) = commit(
+        { it.copy(resetOnPlugged = value) },
+        { it.setResetOnPlugged(value) },
+    )
+
+    fun setResetOnReboot(value: Boolean) = commit(
+        { it.copy(resetOnReboot = value) },
+        { it.setResetOnReboot(value) },
+    )
+
+    fun setBatteryAlarmEnabled(value: Boolean) = commit(
+        { it.copy(batteryAlarmEnabled = value) },
+        { it.setBatteryAlarmEnabled(value) },
+    )
+
+    fun setAlarmThresholds(low: Int, high: Int) {
+        val safeLow = low.coerceIn(1, 99)
+        val safeHigh = high.coerceIn(safeLow, 99)
+        commit(
+            { it.copy(batteryLowThreshold = safeLow, batteryHighThreshold = safeHigh) },
+            {
+                it.setBatteryLowThreshold(safeLow)
+                it.setBatteryHighThreshold(safeHigh)
+            },
+        )
     }
 
-    fun setAutoResetLevel(level: Int) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setAutoResetLevel(level)
-            _autoResetLevel.value = level
-        }
-    }
+    fun setAlarmFrequency(value: Int) = commit(
+        { it.copy(alarmFrequency = value) },
+        { it.setAlarmFrequency(value) },
+    )
 
-    fun setAutoResetLevelEnabled(v: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setAutoResetLevelEnabled(v)
-            _autoResetLevelEnabled.value = v
-        }
-    }
+    fun setFullChargeAlarmEnabled(value: Boolean) = commit(
+        { it.copy(fullChargeAlarmEnabled = value) },
+        { it.setFullChargeAlarmEnabled(value) },
+    )
 
-    fun setResetOnPlugged(v: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setResetOnPlugged(v)
-            _resetOnPlugged.value = v
-        }
-    }
+    fun setAlarmVibrate(value: Boolean) = commit(
+        { it.copy(alarmVibrate = value) },
+        { it.setBatteryAlarmVibrate(value) },
+    )
 
-    fun setResetOnReboot(v: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setResetOnReboot(v)
-            _resetOnReboot.value = v
-        }
-    }
+    fun setAlarmSound(uri: String?) = commit(
+        { it.copy(alarmSound = uri) },
+        { it.setBatteryAlarmSound(uri ?: "") },
+    )
 
     fun resetStats() {
         viewModelScope.launch(Dispatchers.IO) {
-            service?.resetStats()
-            refreshData()
-        }
-    }
-
-    fun setBatteryAlarmEnabled(v: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setBatteryAlarmEnabled(v)
-            _batteryAlarmEnabled.value = v
-        }
-    }
-
-    fun setBatteryLowThreshold(v: Int) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setBatteryLowThreshold(v)
-            _batteryLowThreshold.value = v
-        }
-    }
-
-    fun setBatteryHighThreshold(v: Int) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setBatteryHighThreshold(v)
-            _batteryHighThreshold.value = v
-        }
-    }
-
-    fun setAlarmFrequency(v: Int) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setAlarmFrequency(v)
-            _alarmFrequency.value = v
-        }
-    }
-
-    fun setFullChargeAlarmEnabled(v: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setFullChargeAlarmEnabled(v)
-            _fullChargeAlarmEnabled.value = v
-        }
-    }
-
-    fun setBatteryAlarmVibrate(v: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setBatteryAlarmVibrate(v)
-            _batteryAlarmVibrate.value = v
-        }
-    }
-
-    fun setBatteryAlarmSound(uri: String?) {
-        viewModelScope.launch(Dispatchers.IO) { 
-            service?.setBatteryAlarmSound(uri ?: "")
-            _batteryAlarmSound.value = uri
+            try {
+                service?.resetStats()
+            } catch (e: Exception) {
+                Log.e(TAG, "resetStats failed", e)
+                return@launch
+            }
+            refresh(includeSlow = true)
         }
     }
 }

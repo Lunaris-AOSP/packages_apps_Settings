@@ -1,72 +1,76 @@
 /*
  * SPDX-FileCopyrightText: 2026 kenway214
+ * SPDX-FileCopyrightText: Lunaris AOSP
  * SPDX-License-Identifier: Apache-2.0
  */
 
 package com.android.settings.fuelgauge.powerinsight
 
+import android.app.Activity
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.android.settings.R
-import com.android.settingslib.search.SearchIndexable
-import com.android.settingslib.search.SearchIndexableData
-import com.android.settingslib.search.SearchIndexableResources
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
-import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.surfaceColorAtElevation
-import com.android.settingslib.spa.framework.theme.SettingsTheme
-import com.android.settings.search.BaseSearchIndexProvider
-import android.content.Context
-import android.content.Intent
-import android.media.RingtoneManager
-import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import android.app.Activity
-import android.os.Environment
-import java.io.File
-import java.io.FileOutputStream
-import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BatteryChargingFull
+import androidx.compose.material.icons.filled.PowerSettingsNew
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.android.settings.R
+import com.android.settings.search.BaseSearchIndexProvider
+import com.android.settingslib.search.SearchIndexable
+import com.android.settingslib.spa.framework.theme.SettingsTheme
 
 @SearchIndexable
 class PowerInsightSettings : Fragment() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().title = getString(R.string.power_insight_title)
@@ -75,12 +79,18 @@ class PowerInsightSettings : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
+        layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+        )
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             SettingsTheme {
-                PowerInsightRoot()
+                PowerInsightAccentTheme {
+                    PowerInsightRoot()
+                }
             }
         }
     }
@@ -91,1456 +101,233 @@ class PowerInsightSettings : Fragment() {
     }
 }
 
+private enum class PowerInsightTab(@StringRes val labelRes: Int) {
+    Live(R.string.power_insight_tab_live),
+    History(R.string.power_insight_tab_history),
+    Apps(R.string.power_insight_tab_apps),
+    Settings(R.string.power_insight_tab_settings),
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PowerInsightRoot(viewModel: PowerInsightViewModel = viewModel()) {
-    val stats by viewModel.stats.collectAsState()
-    val flow by viewModel.flow.collectAsState()
-    val history by viewModel.history.collectAsState()
-    val apps by viewModel.apps.collectAsState()
-    val isEnabled by viewModel.isEnabled.collectAsState()
-    val isNotifEnabled by viewModel.isNotifEnabled.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     var selectedTab by remember { mutableIntStateOf(0) }
-    var showHealthDetails by remember { mutableStateOf(false) }
+    var showHealthDialog by remember { mutableStateOf(false) }
     var showSessionDetails by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
-    val ringtonePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
+    val ringtonePicker = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val uri = result.data?.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
-            viewModel.setBatteryAlarmSound(uri?.toString())
+            val uri = result.data
+                ?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri::class.java)
+            viewModel.setAlarmSound(uri?.toString())
         }
     }
 
-    fun launchRingtonePicker() {
+    val currentSound = state.config.alarmSound
+    val pickerTitle = stringResource(R.string.power_insight_alarm_sound)
+    val launchRingtonePicker: () -> Unit = {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
             putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
-            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Alarm Sound")
-            val currentUri = viewModel.batteryAlarmSound.value
-            if (!currentUri.isNullOrEmpty()) {
-                putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(currentUri))
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, pickerTitle)
+            if (!currentSound.isNullOrEmpty()) {
+                putExtra(
+                    RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                    Uri.parse(currentSound),
+                )
             }
         }
-        ringtonePickerLauncher.launch(intent)
+        ringtonePicker.launch(intent)
     }
 
     if (showSessionDetails) {
-        androidx.activity.compose.BackHandler {
-            showSessionDetails = false
-        }
-        SessionDetailsScreen(stats = stats, onBack = { showSessionDetails = false })
-    } else {
-        Scaffold(containerColor = Color.Transparent) { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                MasterToggleCard(
-                    enabled = isEnabled,
-                    onToggle = { viewModel.setEnabled(it) },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-
-                TabRow(
-                    selectedTabIndex = selectedTab,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    containerColor = Color.Transparent,
-                    divider = {}
-                ) {
-                    Tab(
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 },
-                        text = { Text("Realtime") },
-                        icon = { Icon(Icons.Default.FlashOn, null) }
-                    )
-                    Tab(
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 },
-                        text = { Text("History") },
-                        icon = { Icon(Icons.Default.History, null) }
-                    )
-                    Tab(
-                        selected = selectedTab == 2,
-                        onClick = { selectedTab = 2 },
-                        text = { Text("Apps") },
-                        icon = { Icon(Icons.Default.Apps, null) }
-                    )
-                    Tab(
-                        selected = selectedTab == 3,
-                        onClick = { selectedTab = 3 },
-                        text = { Text("Settings") },
-                        icon = { Icon(Icons.Default.Settings, null) }
-                    )
-                }
-
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (selectedTab) {
-                        0 -> RealtimeTab(
-                            stats = stats,
-                            flow = flow,
-                            onOpenHealth = { showHealthDetails = true },
-                            onOpenSession = { showSessionDetails = true }
-                        )
-                        1 -> HistoryTab(history)
-                        2 -> AppsTab(apps)
-                        3 -> SettingsTab(viewModel, isEnabled, isNotifEnabled, onPickSound = { launchRingtonePicker() })
-                    }
-                }
-            }
-        }
-    }
-
-    if (showHealthDetails) {
-        BatteryHealthDialog(stats = stats, onDismiss = { showHealthDetails = false })
-    }
-}
-
-@Composable
-fun MasterToggleCard(
-    enabled: Boolean,
-    onToggle: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceBright
+        BackHandler { showSessionDetails = false }
+        SessionDetailsScreen(
+            stats = state.stats,
+            onBack = { showSessionDetails = false },
         )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Default.BatteryChargingFull, null,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
-                Spacer(Modifier.width(18.dp))
-                Column {
-                    Text(
-                        stringResource(R.string.power_insight_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    Text(
-                        text = if (enabled) "Monitoring active" else "Monitoring disabled",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            Switch(
-                checked = enabled,
-                onCheckedChange = onToggle
-            )
-        }
-    }
-}
-
-@Composable
-fun RealtimeTab(
-    stats: com.android.internal.os.PowerInsightStats,
-    flow: List<com.android.internal.os.PowerInsightFlowSample>,
-    onOpenHealth: () -> Unit,
-    onOpenSession: () -> Unit
-) {
-    var selectedChartTab by remember { mutableIntStateOf(if (stats.isCharging) 0 else 1) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(32.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                TabRow(
-                    selectedTabIndex = selectedChartTab,
-                    containerColor = Color.Transparent,
-                    divider = {},
-                    indicator = { tabPositions ->
-                        SecondaryIndicator(
-                            Modifier.tabIndicatorOffset(tabPositions[selectedChartTab]),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                ) {
-                    Tab(
-                        selected = selectedChartTab == 0,
-                        onClick = { selectedChartTab = 0 },
-                        text = { Text("Charging", fontWeight = FontWeight.SemiBold) }
-                    )
-                    Tab(
-                        selected = selectedChartTab == 1,
-                        onClick = { selectedChartTab = 1 },
-                        text = { Text("Discharging", fontWeight = FontWeight.SemiBold) }
-                    )
-                }
-                
-                Spacer(Modifier.height(16.dp))
-                
-                val filteredFlow = flow.filter { it.isCharging == (selectedChartTab == 0) }
-                PowerFlowChart(filteredFlow, stats)
-            }
-        }
-        
-        RealtimeSummaryGrid(stats, onOpenHealth, onOpenSession)
-    }
-}
-
-@Composable
-fun HistoryTab(history: List<com.android.internal.os.PowerInsightHistoryBucket>) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        if (history.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No history data yet", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        } else {
-            history.forEach { bucket ->
-                HistoryBucketItem(bucket)
-            }
-        }
-    }
-}
-
-@Composable
-fun AppsTab(apps: List<com.android.internal.os.PowerInsightAppUsage>) {
-    val context = LocalContext.current
-    val pm = context.packageManager
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text("App usage since last charge", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        if (apps.isEmpty()) {
-            Box(Modifier.fillMaxSize().height(200.dp), contentAlignment = Alignment.Center) {
-                Text("No app usage data available yet", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            return@Column
-        }
-        val totalMah = apps.sumOf { it.consumedPowerMah }.coerceAtLeast(0.1)
-        apps.forEach { app ->
-            val pct = (app.consumedPowerMah * 100.0 / totalMah).coerceIn(0.0, 100.0)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f))
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        modifier = Modifier.size(44.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant
-                    ) {
-                        val icon = remember(app.packageName) {
-                            try {
-                                pm.getApplicationIcon(app.packageName)
-                            } catch (e: Exception) {
-                                null
-                            }
-                        }
-                        if (icon != null) {
-                            androidx.compose.ui.viewinterop.AndroidView(
-                                factory = { ctx ->
-                                    android.widget.ImageView(ctx).apply {
-                                        setImageDrawable(icon)
-                                    }
-                                },
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                app.appLabel ?: app.packageName ?: "Unknown",
-                                modifier = Modifier.weight(1f),
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1
-                            )
-                            Text(
-                                String.format("%.1f mAh", app.consumedPowerMah),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                        Text(
-                            "FG ${formatTime(app.foregroundTimeMs)} • BG ${formatTime(app.backgroundTimeMs)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        LinearProgressIndicator(
-                            progress = { (pct / 100.0).toFloat() },
-                            modifier = Modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SettingsTab(viewModel: PowerInsightViewModel, isEnabled: Boolean, isNotifEnabled: Boolean, onPickSound: () -> Unit) {
-    val monitorInterval by viewModel.monitorInterval.collectAsState()
-    val resetPlugged by viewModel.resetOnPlugged.collectAsState()
-    val resetReboot by viewModel.resetOnReboot.collectAsState()
-    val autoResetEnabled by viewModel.autoResetLevelEnabled.collectAsState()
-    val autoResetLevel by viewModel.autoResetLevel.collectAsState()
-    
-    val batteryAlarmEnabled by viewModel.batteryAlarmEnabled.collectAsState()
-    val batteryLowThreshold by viewModel.batteryLowThreshold.collectAsState()
-    val batteryHighThreshold by viewModel.batteryHighThreshold.collectAsState()
-    val alarmFrequency by viewModel.alarmFrequency.collectAsState()
-    val fullChargeAlarmEnabled by viewModel.fullChargeAlarmEnabled.collectAsState()
-    val alarmSound by viewModel.batteryAlarmSound
-    val alarmVibrate by viewModel.batteryAlarmVibrate
-    
-    var showIntervalDialog by remember { mutableStateOf(false) }
-    var showResetLevelDialog by remember { mutableStateOf(false) }
-    var showResetConfirmDialog by remember { mutableStateOf(false) }
-    var showAlarmFreqDialog by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        GroupCard(title = "General") {
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.power_insight_notif_interval)) },
-                supportingContent = { Text(stringResource(R.string.power_insight_notif_interval_summary, monitorInterval / 1000)) },
-                modifier = Modifier.clickable { showIntervalDialog = true },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
-        }
-
-        GroupCard(title = "Notification") {
-            ToggleRow(
-                title = stringResource(R.string.power_insight_notif_toggle),
-                summary = stringResource(R.string.power_insight_notif_toggle_summary),
-                checked = isNotifEnabled,
-                enabled = isEnabled,
-                onToggle = { viewModel.setNotifEnabled(it) }
-            )
-        }
-
-        GroupCard(title = "Auto Reset") {
-            ToggleRow(
-                title = stringResource(R.string.power_insight_auto_reset_level_title),
-                summary = stringResource(R.string.power_insight_auto_reset_level_summary),
-                checked = autoResetEnabled,
-                onToggle = { viewModel.setAutoResetLevelEnabled(it) }
-            )
-            ListItem(
-                headlineContent = { 
-                    Text(
-                        stringResource(R.string.power_insight_auto_reset_level_percent),
-                        color = if (autoResetEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                    ) 
-                },
-                supportingContent = { 
-                    Text(
-                        "$autoResetLevel%",
-                        color = if (autoResetEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                    ) 
-                },
-                modifier = Modifier.clickable(enabled = autoResetEnabled) { showResetLevelDialog = true },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
-            ToggleRow(
-                title = stringResource(R.string.power_insight_reset_plugged),
-                summary = stringResource(R.string.power_insight_reset_plugged_summary),
-                checked = resetPlugged,
-                onToggle = { viewModel.setResetOnPlugged(it) }
-            )
-            ToggleRow(
-                title = stringResource(R.string.power_insight_reset_reboot),
-                summary = stringResource(R.string.power_insight_reset_reboot_summary),
-                checked = resetReboot,
-                onToggle = { viewModel.setResetOnReboot(it) }
-            )
-        }
-
-        GroupCard(title = "Alarms") {
-            ToggleRow(
-                title = stringResource(R.string.power_insight_battery_alarm_title),
-                summary = stringResource(R.string.power_insight_battery_alarm_summary),
-                checked = batteryAlarmEnabled,
-                onToggle = { viewModel.setBatteryAlarmEnabled(it) }
-            )
-            
-            if (batteryAlarmEnabled) {
-                Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("$batteryLowThreshold%", style = MaterialTheme.typography.bodyMedium)
-                        Text("$batteryHighThreshold%", style = MaterialTheme.typography.bodyMedium)
-                    }
-                    RangeSlider(
-                        value = batteryLowThreshold.toFloat()..batteryHighThreshold.toFloat(),
-                        onValueChange = { range ->
-                            viewModel.setBatteryLowThreshold(range.start.toInt())
-                            viewModel.setBatteryHighThreshold(range.endInclusive.toInt())
-                        },
-                        valueRange = 1f..99f,
-                        steps = 98,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-                
-                val freqLabels = listOf("Only once", "Every 1% change", "Every 5% change", "Every 10% change", "Every 5 minutes")
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.power_insight_alarm_frequency)) },
-                    supportingContent = { Text(freqLabels.getOrElse(alarmFrequency) { "Unknown" }) },
-                    trailingContent = { Icon(Icons.Rounded.ChevronRight, null) },
-                    modifier = Modifier.clickable { showAlarmFreqDialog = true },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                )
-
-                val context = LocalContext.current
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.power_insight_alarm_sound)) },
-                    supportingContent = { Text(getRingtoneName(context, alarmSound)) },
-                    trailingContent = { Icon(Icons.Rounded.MusicNote, null) },
-                    modifier = Modifier.clickable { onPickSound() },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                )
-
-                ToggleRow(
-                    title = stringResource(R.string.power_insight_alarm_vibrate),
-                    summary = stringResource(R.string.power_insight_alarm_vibrate_summary),
-                    checked = alarmVibrate,
-                    onToggle = { viewModel.setBatteryAlarmVibrate(it) }
-                )
-            }
-            
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
-            
-            ToggleRow(
-                title = stringResource(R.string.power_insight_full_charge_alarm),
-                summary = stringResource(R.string.power_insight_full_charge_alarm_summary),
-                checked = fullChargeAlarmEnabled,
-                onToggle = { viewModel.setFullChargeAlarmEnabled(it) }
-            )
-        }
-
-        GroupCard {
-            ListItem(
-                headlineContent = {
-                    Text(
-                        stringResource(R.string.power_insight_manual_reset),
-                        color = MaterialTheme.colorScheme.error,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                supportingContent = { Text(stringResource(R.string.power_insight_manual_reset_summary)) },
-                modifier = Modifier.clickable { showResetConfirmDialog = true },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
-        }
+        return
     }
 
-    if (showIntervalDialog) {
-        IntervalDialog(
-            currentInterval = monitorInterval,
-            onDismiss = { showIntervalDialog = false },
-            onSelect = {
-                viewModel.setMonitorInterval(it)
-                showIntervalDialog = false
-            }
-        )
-    }
-
-    if (showResetLevelDialog) {
-        ResetThresholdDialog(
-            currentLevel = autoResetLevel,
-            onDismiss = { showResetLevelDialog = false },
-            onConfirm = {
-                viewModel.setAutoResetLevel(it)
-                showResetLevelDialog = false
-            }
-        )
-    }
-
-    if (showResetConfirmDialog) {
-        AlertDialog(
-            onDismissRequest = { showResetConfirmDialog = false },
-            title = { Text("Reset statistics?") },
-            text = { Text("This will clear all currently tracked battery usage and flow data.") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.resetStats()
-                        showResetConfirmDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Reset")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showResetConfirmDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-
-    if (showAlarmFreqDialog) {
-        AlarmFrequencyDialog(
-            current = alarmFrequency,
-            onDismiss = { showAlarmFreqDialog = false },
-            onSelect = { 
-                viewModel.setAlarmFrequency(it)
-                showAlarmFreqDialog = false
-            }
-        )
-    }
-}
-
-@Composable
-fun ResetThresholdDialog(currentLevel: Int, onDismiss: () -> Unit, onConfirm: (Int) -> Unit) {
-    var text by remember { mutableStateOf(currentLevel.toString()) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.power_insight_auto_reset_level_percent)) },
-        text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { if (it.length <= 3) text = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Percentage (1-100)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-        },
-        confirmButton = {
-            Button(onClick = {
-                val level = text.toIntOrNull()?.coerceIn(1, 100) ?: 100
-                onConfirm(level)
-            }) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
-}
-
-@Composable
-fun IntervalDialog(currentInterval: Int, onDismiss: () -> Unit, onSelect: (Int) -> Unit) {
-    val options = listOf(
-        5000 to stringResource(R.string.power_insight_interval_5s),
-        10000 to stringResource(R.string.power_insight_interval_10s),
-        15000 to stringResource(R.string.power_insight_interval_15s),
-        30000 to stringResource(R.string.power_insight_interval_30s),
-        60000 to stringResource(R.string.power_insight_interval_60s)
-    )
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.power_insight_notif_interval)) },
-        text = {
-            Column {
-                options.forEach { (ms, label) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onSelect(ms) }
-                            .padding(vertical = 12.dp, horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(selected = currentInterval == ms, onClick = { onSelect(ms) })
-                        Spacer(Modifier.width(12.dp))
-                        Text(label)
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
-}
-
-@Composable
-fun AlarmFrequencyDialog(current: Int, onDismiss: () -> Unit, onSelect: (Int) -> Unit) {
-    val options = listOf("Only once", "Every 1% change", "Every 5% change", "Every 10% change", "Every 5 minutes")
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Alarm frequency") },
-        text = {
-            Column {
-                options.forEachIndexed { index, label ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onSelect(index) }
-                            .padding(vertical = 12.dp, horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(selected = current == index, onClick = { onSelect(index) })
-                        Spacer(Modifier.width(12.dp))
-                        Text(label)
-                    }
-                }
-            }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
-    )
-}
-
-@Composable
-fun GroupCard(title: String? = null, content: @Composable ColumnScope.() -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        title?.let {
-            Text(
-                it,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
-        ) {
-            Column(content = content)
-        }
-    }
-}
-
-@Composable
-fun ToggleRow(title: String, summary: String, checked: Boolean, enabled: Boolean = true, onToggle: (Boolean) -> Unit) {
-    ListItem(
-        headlineContent = { Text(title, color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)) },
-        supportingContent = { Text(summary, color = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)) },
-        trailingContent = { Switch(checked = checked, onCheckedChange = onToggle, enabled = enabled) },
-        modifier = Modifier.clickable(enabled = enabled) { onToggle(!checked) },
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-    )
-}
-
-@Composable
-fun PowerFlowChart(
-    flow: List<com.android.internal.os.PowerInsightFlowSample>,
-    stats: com.android.internal.os.PowerInsightStats
-) {
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val gridColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
-    
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Column {
-                Text(
-                    text = "${Math.abs(stats.currentNow)} mA",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.ExtraBold
-                )
-                Text(
-                    text = String.format("%.2f W • %d mV", stats.powerWatts, stats.voltage),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    "${flow.size} samples",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-        
-        Spacer(Modifier.height(24.dp))
-        
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-        ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val width = size.width
-                val height = size.height
-                
-                // Draw Grid
-                val gridLines = 5
-                for (i in 0 until gridLines) {
-                    val y = height * i / (gridLines - 1)
-                    drawLine(gridColor, start = Offset(0f, y), end = Offset(width, y), strokeWidth = 1.dp.toPx())
-                }
-                
-                if (flow.isNotEmpty()) {
-                    val displaySamples = flow.takeLast(60)
-                    val maxVal = displaySamples.maxOf { Math.abs(it.current) }.coerceAtLeast(100).toFloat() * 1.1f
-                    
-                    val points = displaySamples.mapIndexed { index, sample ->
-                        val x = if (displaySamples.size > 1) {
-                            width * index / (displaySamples.size - 1)
-                        } else width / 2
-                        val y = height - (Math.abs(sample.current) / maxVal * height)
-                        Offset(x, y)
-                    }
-
-                    if (points.size > 1) {
-                        val path = Path().apply {
-                            moveTo(points[0].x, points[0].y)
-                            for (i in 1 until points.size) {
-                                val p1 = points[i - 1]
-                                val p2 = points[i]
-                                val cp1 = Offset(p1.x + (p2.x - p1.x) / 2f, p1.y)
-                                val cp2 = Offset(p1.x + (p2.x - p1.x) / 2f, p2.y)
-                                cubicTo(cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y)
-                            }
-                        }
-                        
-                        // Draw Gradient Area
-                        val fillPath = Path().apply {
-                            addPath(path)
-                            lineTo(points.last().x, height)
-                            lineTo(points.first().x, height)
-                            close()
-                        }
-                        drawPath(
-                            fillPath,
-                            brush = Brush.verticalGradient(
-                                colors = listOf(primaryColor.copy(alpha = 0.3f), Color.Transparent)
-                            )
-                        )
-                        
-                        // Draw Main Line
-                        drawPath(
-                            path,
-                            color = primaryColor,
-                            style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
-                        )
-                        
-                        // Draw Last Point Pulse
-                        val lastPoint = points.last()
-                        drawCircle(primaryColor, radius = 6.dp.toPx(), center = lastPoint)
-                        drawCircle(primaryColor.copy(alpha = 0.3f), radius = 10.dp.toPx(), center = lastPoint)
-                    }
-                }
-            }
-            
-            // X-Axis Marking (Simplified)
-            Text(
-                "Now",
-                modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 4.dp),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                "2m ago",
-                modifier = Modifier.align(Alignment.BottomStart).padding(bottom = 4.dp),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        // Min / Avg / Max Row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            MiniStat("Average", "${stats.avgCurrent} mA")
-            VerticalDivider(modifier = Modifier.height(24.dp).align(Alignment.CenterVertically), color = gridColor)
-            MiniStat("Minimum", "${stats.minCurrent} mA")
-            VerticalDivider(modifier = Modifier.height(24.dp).align(Alignment.CenterVertically), color = gridColor)
-            MiniStat("Maximum", "${stats.maxCurrent} mA")
-        }
-    }
-}
-
-@Composable
-fun MiniStat(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-@Composable
-fun RealtimeStatsGrid(stats: com.android.internal.os.PowerInsightStats) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        StatCard(Modifier.weight(1f), "Active Drain", String.format("%.1f%%/h", stats.activeDrainRate), Icons.Default.FlashOn)
-        StatCard(Modifier.weight(1f), "Idle Drain", String.format("%.1f%%/h", stats.idleDrainRate), Icons.Default.ModeNight)
-    }
-    Spacer(Modifier.height(4.dp))
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        StatCard(Modifier.weight(1f), "Screen On", formatTime(stats.screenOnTime), Icons.Default.WbSunny)
-        StatCard(Modifier.weight(1f), "Deep Sleep", formatTime(stats.deepSleepTime), Icons.Default.Bedtime)
-    }
-}
-
-@Composable
-fun StatCard(modifier: Modifier, title: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.height(8.dp))
-            Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text(title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-}
-
-@Composable
-fun BatteryHealthCard(stats: com.android.internal.os.PowerInsightStats, onOpenHealth: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onOpenHealth() },
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Favorite, null, tint = Color(0xFFE57373))
-                Spacer(Modifier.width(12.dp))
-                Text("Battery Health", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.weight(1f))
-                Text(String.format("%.1f%%", stats.healthPercent), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-            }
-            Spacer(Modifier.height(16.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-            Spacer(Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                HealthMetric("Capacity", String.format("%d/%d mAh", stats.currentCapacity, stats.totalCapacity))
-                HealthMetric("Cycles", stats.cycleCount.toString())
-                HealthMetric("Status", stats.health ?: "Unknown")
-            }
-        }
-    }
-}
-
-@Composable
-fun BatteryHealthDialog(stats: com.android.internal.os.PowerInsightStats, onDismiss: () -> Unit) {
-    val cyclePenalty = ((stats.cycleCount / 800f) * 35f).coerceIn(0f, 35f)
-    val cycleHealth = (100f - cyclePenalty).coerceIn(0f, 100f)
-    val weighted = ((stats.capacityHealth * 0.7f) + (cycleHealth * 0.3f)).coerceIn(0f, 100f)
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Battery health details") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Design capacity: ${stats.totalCapacity} mAh")
-                Text("Full charge capacity: ${stats.currentCapacity} mAh")
-                Text("Capacity health: ${String.format("%.1f%%", stats.capacityHealth)}")
-                Text("Cycle count: ${stats.cycleCount}")
-                Text("Cycle health: ${String.format("%.1f%%", cycleHealth)}")
-                Text("Final health = (capacityHealth × 0.7) + (cycleHealth × 0.3)")
-                Text("Final health: ${String.format("%.1f%%", weighted)}", fontWeight = FontWeight.Bold)
-            }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Close") } }
-    )
-}
-
-@Composable
-fun HealthMetric(label: String, value: String) {
-    Column {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-    }
-}
-
-@Composable
-fun HistoryBucketItem(bucket: com.android.internal.os.PowerInsightHistoryBucket) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright)
-    ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(String.format("%02d:00", bucket.hour), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.width(60.dp))
-            Spacer(Modifier.width(16.dp))
-            Column(Modifier.weight(1f)) {
-                Text("SOT: ${formatTime(bucket.screenOnMs)}", style = MaterialTheme.typography.bodyMedium)
-                LinearProgressIndicator(
-                    progress = { (bucket.drainPercent / 20f).coerceIn(0f, 1f) },
-                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
-            }
-            Spacer(Modifier.width(16.dp))
-            Text("-${bucket.drainPercent}%", style = MaterialTheme.typography.titleMedium, color = Color(0xFFE57373), fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-fun formatTime(ms: Long): String {
-    val s = ms / 1000
-    val m = s / 60
-    val h = m / 60
-    return if (h > 0) "${h}h ${m % 60}m" else "${m}m ${s % 60}s"
-}
-
-fun getRingtoneName(context: Context, uriString: String?): String {
-    if (uriString.isNullOrEmpty()) return "None"
-    return try {
-        val uri = Uri.parse(uriString)
-        RingtoneManager.getRingtone(context, uri)?.getTitle(context) ?: "None"
-    } catch (e: Exception) {
-        "None"
-    }
-}
-
-@Composable
-fun RealtimeSummaryGrid(
-    stats: com.android.internal.os.PowerInsightStats,
-    onOpenHealth: () -> Unit,
-    onOpenSession: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Battery Health Tile
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .clickable { onOpenHealth() },
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(
-                    Icons.Default.Favorite,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = Color(0xFFE57373)
-                )
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    text = String.format("%.1f%%", stats.healthPercent),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "Battery Health",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        // Session Tile
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .clickable { onOpenSession() },
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(
-                    Icons.Default.Assessment,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    text = "Details",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Session Stats",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SessionDetailsScreen(
-    stats: com.android.internal.os.PowerInsightStats,
-    onBack: () -> Unit
-) {
-    var selectedSubTab by remember { mutableIntStateOf(if (stats.isCharging) 0 else 1) }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Session details", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
+    Scaffold(containerColor = Color.Transparent) { padding ->
         Column(
             modifier = Modifier
+                .nestedScroll(rememberNestedScrollInteropConnection())
                 .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(padding),
         ) {
-            // Tab Row
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            MonitorHeroCard(
+                enabled = state.monitoringEnabled,
+                serviceAvailable = state.serviceAvailable,
+                charging = state.stats.isCharging,
+                onToggle = viewModel::setEnabled,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+
+            PrimaryTabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = Color.Transparent,
+                divider = {},
+                modifier = Modifier.padding(horizontal = 8.dp),
             ) {
-                TabRow(
-                    selectedTabIndex = selectedSubTab,
-                    containerColor = Color.Transparent,
-                    divider = {},
-                    indicator = { tabPositions ->
-                        SecondaryIndicator(
-                            Modifier.tabIndicatorOffset(tabPositions[selectedSubTab]),
-                            color = MaterialTheme.colorScheme.primary
+                PowerInsightTab.entries.forEachIndexed { index, tab ->
+                    Tab(
+                        selected = selectedTab == index,
+                        onClick = { selectedTab = index },
+                        text = { Text(stringResource(tab.labelRes)) },
+                    )
+                }
+            }
+
+            when {
+                state.loading -> LoadingPane(Modifier.weight(1f))
+                !state.serviceAvailable -> ServiceUnavailablePane(Modifier.weight(1f))
+                else -> AnimatedContent(
+                    targetState = selectedTab,
+                    transitionSpec = {
+                        val forward = targetState > initialState
+                        val shift: (Int) -> Int = { full -> full / 8 }
+                        (
+                            slideInHorizontally(tween(220)) {
+                                if (forward) shift(it) else -shift(it)
+                            } + fadeIn(tween(160))
+                            ) togetherWith (
+                            slideOutHorizontally(tween(220)) {
+                                if (forward) -shift(it) else shift(it)
+                            } + fadeOut(tween(120))
+                            )
+                    },
+                    label = "tabContent",
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                ) { tab ->
+                    when (PowerInsightTab.entries[tab]) {
+                        PowerInsightTab.Live -> RealtimeScreen(
+                            state = state,
+                            onOpenHealth = { showHealthDialog = true },
+                            onOpenSession = { showSessionDetails = true },
+                        )
+                        PowerInsightTab.History -> HistoryScreen(state.history)
+                        PowerInsightTab.Apps -> AppsScreen(state.apps)
+                        PowerInsightTab.Settings -> PowerInsightConfigScreen(
+                            state = state,
+                            viewModel = viewModel,
+                            onPickSound = launchRingtonePicker,
                         )
                     }
-                ) {
-                    Tab(
-                        selected = selectedSubTab == 0,
-                        onClick = { selectedSubTab = 0 },
-                        text = { Text("Charging", fontWeight = FontWeight.SemiBold) }
-                    )
-                    Tab(
-                        selected = selectedSubTab == 1,
-                        onClick = { selectedSubTab = 1 },
-                        text = { Text("Discharging", fontWeight = FontWeight.SemiBold) }
-                    )
                 }
             }
-
-            if (selectedSubTab == 0) {
-                ChargingSessionContent(stats)
-            } else {
-                DischargingSessionContent(stats)
-            }
         }
+    }
+
+    if (showHealthDialog) {
+        BatteryHealthDialog(
+            stats = state.stats,
+            onDismiss = { showHealthDialog = false },
+        )
     }
 }
 
 @Composable
-fun ChargingSessionContent(stats: com.android.internal.os.PowerInsightStats) {
-    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        if (stats.chargingStartTime > 0) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f))
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
+private fun MonitorHeroCard(
+    enabled: Boolean,
+    serviceAvailable: Boolean,
+    charging: Boolean,
+    onToggle: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val badgeContainer = when {
+        !enabled -> MaterialTheme.colorScheme.surfaceContainerHighest
+        charging -> accents.chargeContainer
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
+    val badgeContent = when {
+        !enabled -> MaterialTheme.colorScheme.onSurfaceVariant
+        charging -> accents.charge
+        else -> MaterialTheme.colorScheme.onPrimaryContainer
+    }
+    val status = when {
+        !serviceAvailable -> stringResource(R.string.power_insight_status_service_unavailable)
+        !enabled -> stringResource(R.string.power_insight_status_paused)
+        charging -> stringResource(R.string.power_insight_status_charging)
+        else -> stringResource(R.string.power_insight_status_active)
+    }
+    val statusColor = when {
+        !serviceAvailable -> MaterialTheme.colorScheme.error
+        !enabled -> MaterialTheme.colorScheme.onSurfaceVariant
+        charging -> accents.charge
+        else -> MaterialTheme.colorScheme.primary
+    }
+
+    Surface(
+        shape = PowerInsightShapes.hero,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ExpressiveIconBadge(
+                icon = when {
+                    !serviceAvailable -> Icons.Default.Warning
+                    enabled -> Icons.Default.BatteryChargingFull
+                    else -> Icons.Default.PowerSettingsNew
+                },
+                containerColor = badgeContainer,
+                contentColor = badgeContent,
+                active = enabled && serviceAvailable,
+            )
+            Spacer(Modifier.width(16.dp))
+            Column(Modifier.weight(1f)) {
                 Text(
-                    text = "${formatDateTime(stats.chargingStartTime)} → ${if (stats.isCharging) "Ongoing" else formatDateTime(stats.chargingEndTime)}",
+                    text = stringResource(R.string.power_insight_title),
+                    style = PowerInsightType.tileMetric,
+                )
+                Text(
+                    text = status,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    fontWeight = FontWeight.Medium
+                    color = statusColor,
                 )
             }
-        }
-
-        // Section 1: Total Time
-        SessionSectionHeader(
-            title = "Total time",
-            subtitle = formatDurationPrecise(stats.chargingDurationTime),
-            icon = Icons.Default.AccessTime,
-            iconColor = MaterialTheme.colorScheme.primary
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Charged",
-                value = "${stats.chargingLevelCharged}%",
-                subValue = "${stats.chargingMahCharged} mAh",
-                icon = Icons.Default.BatteryChargingFull,
-                iconColor = Color(0xFF81C784)
-            )
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Charging rate",
-                value = String.format("%.1f%%/h", stats.chargingRatePercentPerHour),
-                subValue = "~${(stats.chargingRatePercentPerHour * stats.totalCapacity / 100).toInt()} mA",
-                icon = Icons.Default.Speed,
-                iconColor = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        // Section 2: Screen On Time
-        SessionSectionHeader(
-            title = "Screen on time",
-            subtitle = formatDurationPrecise(stats.chargingScreenOnTime),
-            icon = Icons.Default.Visibility,
-            iconColor = Color(0xFF81C784)
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Charged",
-                value = String.format("%.1f%%", stats.chargingScreenOnLevelCharged.toFloat()),
-                subValue = "${stats.chargingScreenOnMahCharged} mAh",
-                icon = Icons.Default.BatteryChargingFull,
-                iconColor = Color(0xFF81C784)
-            )
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Charging rate",
-                value = String.format("%.1f%%/h", stats.chargingScreenOnRatePercentPerHour),
-                subValue = "~${(stats.chargingScreenOnRatePercentPerHour * stats.totalCapacity / 100).toInt()} mA",
-                icon = Icons.Default.Speed,
-                iconColor = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        // Section 3: Screen Off Time
-        SessionSectionHeader(
-            title = "Screen off time",
-            subtitle = formatDurationPrecise(stats.chargingScreenOffTime),
-            icon = Icons.Default.VisibilityOff,
-            iconColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Charged",
-                value = String.format("%.1f%%", stats.chargingScreenOffLevelCharged.toFloat()),
-                subValue = "${stats.chargingScreenOffMahCharged} mAh",
-                icon = Icons.Default.BatteryChargingFull,
-                iconColor = Color(0xFF81C784)
-            )
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Charging rate",
-                value = String.format("%.1f%%/h", stats.chargingScreenOffRatePercentPerHour),
-                subValue = "~${(stats.chargingScreenOffRatePercentPerHour * stats.totalCapacity / 100).toInt()} mA",
-                icon = Icons.Default.Speed,
-                iconColor = MaterialTheme.colorScheme.primary
+            Spacer(Modifier.width(12.dp))
+            PowerInsightSwitch(
+                checked = enabled,
+                onCheckedChange = onToggle,
+                enabled = serviceAvailable,
             )
         }
     }
 }
 
 @Composable
-fun DischargingSessionContent(stats: com.android.internal.os.PowerInsightStats) {
-    val totalTime = stats.screenOnTime + stats.screenOffTime
-    val totalUsedPct = stats.batteryDrainScreenOn + stats.batteryDrainScreenOff
-    
-    val dischargingHours = totalTime / 3600000f
-    val totalDischargingRate = if (dischargingHours > 0.01f) totalUsedPct / dischargingHours else 0f
-    val totalUsedMah = (totalUsedPct * stats.totalCapacity / 100f).toInt()
-    val totalDischargingMa = (totalDischargingRate * stats.totalCapacity / 100f).toInt()
-
-    val screenOnHours = stats.screenOnTime / 3600000f
-    val activeRate = if (screenOnHours > 0.01f) stats.batteryDrainScreenOn / screenOnHours else 0f
-    val activeMa = (activeRate * stats.totalCapacity / 100f).toInt()
-
-    val screenOffHours = stats.screenOffTime / 3600000f
-    val idleRate = if (screenOffHours > 0.01f) stats.batteryDrainScreenOff / screenOffHours else 0f
-    val idleMa = (idleRate * stats.totalCapacity / 100f).toInt()
-
-    // Partition Screen Off Drain
-    val screenOffSec = stats.screenOffTime / 1000f
-    val deepSleepSec = stats.deepSleepTime / 1000f
-    val awakeSec = Math.max(0f, screenOffSec - deepSleepSec)
-    
-    val deepSleepWeight = 1.0f
-    val awakeWeight = 5.0f
-    val totalFactor = (deepSleepSec * deepSleepWeight) + (awakeSec * awakeWeight)
-    
-    val screenOffMah = stats.batteryDrainScreenOff * stats.totalCapacity / 100f
-    val deepSleepMah = if (totalFactor > 0) (deepSleepSec * deepSleepWeight / totalFactor) * screenOffMah else 0f
-    val awakeMah = Math.max(0f, screenOffMah - deepSleepMah)
-    
-    val deepSleepPct = if (stats.totalCapacity > 0) (deepSleepMah * 100f / stats.totalCapacity) else 0f
-    val awakePct = if (stats.totalCapacity > 0) (awakeMah * 100f / stats.totalCapacity) else 0f
-
-    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        // Section 1: Total Time
-        SessionSectionHeader(
-            title = "Total time",
-            subtitle = formatDurationPrecise(totalTime),
-            icon = Icons.Default.AccessTime,
-            iconColor = MaterialTheme.colorScheme.primary
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Used",
-                value = "${totalUsedPct}%",
-                subValue = "${totalUsedMah} mAh",
-                icon = Icons.Default.TrendingDown,
-                iconColor = Color(0xFFE57373)
-            )
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Discharging rate",
-                value = String.format("%.1f%%/h", totalDischargingRate),
-                subValue = "~${totalDischargingMa} mA",
-                icon = Icons.Default.Speed,
-                iconColor = Color(0xFFE57373)
-            )
-        }
-
-        // Section 2: Screen On Time
-        SessionSectionHeader(
-            title = "Screen on time",
-            subtitle = formatDurationPrecise(stats.screenOnTime),
-            icon = Icons.Default.Visibility,
-            iconColor = Color(0xFF81C784),
-            showInfo = true
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Used",
-                value = String.format("%.1f%%", stats.batteryDrainScreenOn.toFloat()),
-                subValue = "${(stats.batteryDrainScreenOn * stats.totalCapacity / 100)} mAh",
-                icon = Icons.Default.TrendingDown,
-                iconColor = Color(0xFFE57373)
-            )
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Discharging rate",
-                value = String.format("%.1f%%/h", activeRate),
-                subValue = "~${activeMa} mA",
-                icon = Icons.Default.Speed,
-                iconColor = Color(0xFFE57373)
-            )
-        }
-
-        // Section 3: Screen Off Time
-        SessionSectionHeader(
-            title = "Screen off time",
-            subtitle = formatDurationPrecise(stats.screenOffTime),
-            icon = Icons.Default.VisibilityOff,
-            iconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            showInfo = true
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Used",
-                value = String.format("%.1f%%", stats.batteryDrainScreenOff.toFloat()),
-                subValue = "${(stats.batteryDrainScreenOff * stats.totalCapacity / 100)} mAh",
-                icon = Icons.Default.TrendingDown,
-                iconColor = Color(0xFFE57373)
-            )
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Discharging rate",
-                value = String.format("%.1f%%/h", idleRate),
-                subValue = "~${idleMa} mA",
-                icon = Icons.Default.Speed,
-                iconColor = Color(0xFFE57373)
-            )
-        }
-
-        // Section 4: Deep Sleep & Awake
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Deep sleep",
-                value = formatDurationPrecise(stats.deepSleepTime),
-                subValue = "${deepSleepMah.toInt()} mAh (${String.format("%.1f%%", deepSleepPct)})",
-                icon = Icons.Default.ModeNight,
-                iconColor = Color(0xFF9575CD),
-                showInfo = true
-            )
-            MetricCard(
-                modifier = Modifier.weight(1f),
-                label = "Held awake",
-                value = formatDurationPrecise(stats.screenOffTime - stats.deepSleepTime),
-                subValue = "${awakeMah.toInt()} mAh (${String.format("%.1f%%", awakePct)})",
-                icon = Icons.Default.Warning,
-                iconColor = Color(0xFFFFB74D),
-                showInfo = true
-            )
-        }
-    }
-}
-
-@Composable
-fun SessionSectionHeader(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    iconColor: Color = MaterialTheme.colorScheme.primary,
-    showInfo: Boolean = false
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxWidth()
+private fun LoadingPane(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(iconColor.copy(alpha = 0.15f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = iconColor
-            )
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                if (showInfo) {
-                    Icon(
-                        Icons.Default.Info,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                    )
-                }
-            }
-            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
+        CircularProgressIndicator()
     }
 }
 
 @Composable
-fun MetricCard(
-    modifier: Modifier = Modifier,
-    label: String,
-    value: String,
-    subValue: String,
-    icon: ImageVector? = null,
-    iconColor: Color = MaterialTheme.colorScheme.primary,
-    showInfo: Boolean = false
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f))
+private fun ServiceUnavailablePane(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (icon != null) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = iconColor
-                    )
-                } else if (showInfo) {
-                    Icon(
-                        Icons.Default.Info,
-                        contentDescription = null,
-                        modifier = Modifier.size(12.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                    )
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-            Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold)
-            Text(subValue, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
+        EmptyState(
+            icon = Icons.Default.Warning,
+            title = stringResource(R.string.power_insight_service_unavailable_title),
+            body = stringResource(R.string.power_insight_service_unavailable_body),
+        )
     }
 }
-
-fun formatDurationPrecise(ms: Long): String {
-    val totalSecs = ms / 1000
-    val s = totalSecs % 60
-    val totalMins = totalSecs / 60
-    val m = totalMins % 60
-    val h = totalMins / 60
-    
-    return when {
-        h > 0 -> "${h}h ${m}m ${s}s"
-        m > 0 -> "${m}m ${s}s"
-        else -> "${s}s"
-    }
-}
-
-fun formatDateTime(timestamp: Long): String {
-    if (timestamp <= 0) return "N/A"
-    val sdf = java.text.SimpleDateFormat("hh:mm a dd MMM", java.util.Locale.getDefault())
-    return sdf.format(java.util.Date(timestamp))
-}
-

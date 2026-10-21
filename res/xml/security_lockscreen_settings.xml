@@ -20,6 +20,14 @@
     android:key="lockscreen_from_display_settings"
     android:title="@string/lockscreen_settings_title">
 
+    <org.lunaris.settings.preferences.SystemSettingListPreference
+        android:key="lockscreen_display_timeout"
+        android:title="@string/lockscreen_display_timeout_title"
+        android:summary="%s"
+        android:entries="@array/lockscreen_display_timeout_entries"
+        android:entryValues="@array/lockscreen_display_timeout_values"
+        android:defaultValue="10000" />
+
     <PreferenceCategory
         android:key="lockscreen_what_to_show"
         android:title="@string/lockscreen_settings_what_to_show_category">

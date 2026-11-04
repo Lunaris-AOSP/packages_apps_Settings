@@ -66,8 +66,11 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -95,6 +98,11 @@ class BlurSettings : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            )
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setSettingsContent {
                 Themes {
                     BlurSettingsScreen()
@@ -123,16 +131,21 @@ class BlurSettings : Fragment() {
             mutableStateOf(Settings.Secure.getFloat(cr, "system_blur_radius", DEFAULT_BLUR_RADIUS))
         }
 
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+        ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .nestedScroll(rememberNestedScrollInteropConnection())
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 32.dp)
+                contentPadding = PaddingValues(
+                    top = 8.dp,
+                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 24.dp
+                )
             ) {
                 item {
                     BlurIllustration(blursEnabled, blurRadius)
@@ -149,7 +162,7 @@ class BlurSettings : Fragment() {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 16.dp),
+                                .padding(horizontal = 20.dp, vertical = 14.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -200,7 +213,7 @@ class BlurSettings : Fragment() {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 16.dp),
+                                .padding(horizontal = 20.dp, vertical = 14.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Row(
@@ -267,7 +280,7 @@ class BlurSettings : Fragment() {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 16.dp),
+                                .padding(horizontal = 20.dp, vertical = 14.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Row(
@@ -314,32 +327,32 @@ class BlurSettings : Fragment() {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(vertical = 12.dp)
-                .clip(RoundedCornerShape(32.dp))
+                .padding(vertical = 8.dp)
+                .clip(RoundedCornerShape(28.dp))
                 .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f))
-                .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f), RoundedCornerShape(32.dp)),
+                .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f), RoundedCornerShape(28.dp)),
             contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
-                    .width(160.dp)
-                    .height(280.dp)
-                    .padding(vertical = 16.dp)
-                    .clip(RoundedCornerShape(32.dp))
-                    .border(4.dp, Color.Black.copy(alpha = 0.9f), RoundedCornerShape(32.dp))
+                    .width(150.dp)
+                    .height(240.dp)
+                    .padding(vertical = 12.dp)
+                    .clip(RoundedCornerShape(28.dp))
+                    .border(3.5.dp, Color.Black.copy(alpha = 0.9f), RoundedCornerShape(28.dp))
                     .background(Color.Black)
-                    .padding(4.dp)
+                    .padding(3.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(RoundedCornerShape(26.dp))
+                        .clip(RoundedCornerShape(24.dp))
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight()
-                            .clip(RoundedCornerShape(26.dp))
+                            .clip(RoundedCornerShape(24.dp))
                     ) {
                         WallpaperImage(
                             modifier = Modifier
@@ -362,8 +375,8 @@ class BlurSettings : Fragment() {
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 8.dp)
-                        .size(10.dp)
+                        .padding(top = 6.dp)
+                        .size(8.dp)
                         .clip(CircleShape)
                         .background(Color.Black)
                 )
@@ -477,35 +490,35 @@ class BlurSettings : Fragment() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 32.dp, start = 12.dp, end = 12.dp, bottom = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(top = 28.dp, start = 10.dp, end = 10.dp, bottom = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             repeat(4) { rowIndex ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     repeat(2) { colIndex ->
                         val iconIndex = (rowIndex * 2 + colIndex) % icons.size
                         Box(
                             modifier = Modifier
-                                .height(28.dp)
+                                .height(24.dp)
                                 .weight(1f)
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(
                                     MaterialTheme.colorScheme.surfaceBright
                                 )
-                                .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
+                                .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f), RoundedCornerShape(12.dp)),
                             contentAlignment = Alignment.CenterStart
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                                modifier = Modifier.padding(horizontal = 6.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(16.dp)
+                                        .size(14.dp)
                                         .clip(CircleShape)
                                         .background(Color.Transparent),
                                     contentAlignment = Alignment.Center
@@ -513,7 +526,7 @@ class BlurSettings : Fragment() {
                                     Icon(
                                         imageVector = icons[iconIndex],
                                         contentDescription = null,
-                                        modifier = Modifier.size(10.dp),
+                                        modifier = Modifier.size(9.dp),
                                         tint = MaterialTheme.colorScheme.primary
                                     )
                                 }
@@ -533,8 +546,8 @@ class BlurSettings : Fragment() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(28.dp)
-                    .clip(RoundedCornerShape(14.dp))
+                    .height(22.dp)
+                    .clip(RoundedCornerShape(11.dp))
                     .background(MaterialTheme.colorScheme.surfaceBright),
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -542,13 +555,13 @@ class BlurSettings : Fragment() {
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(14.dp))
+                        .clip(RoundedCornerShape(11.dp))
                         .background(MaterialTheme.colorScheme.primary)
                 )
                 Icon(
                     imageVector = Icons.Filled.Brightness4,
                     contentDescription = null,
-                    modifier = Modifier.padding(start = 8.dp).size(12.dp),
+                    modifier = Modifier.padding(start = 6.dp).size(10.dp),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -560,7 +573,7 @@ class BlurSettings : Fragment() {
                 horizontalArrangement = Arrangement.End
             ) {
                 Box(modifier = Modifier
-                    .size(24.dp)
+                    .size(20.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceBright),
                     contentAlignment = Alignment.Center
@@ -568,7 +581,7 @@ class BlurSettings : Fragment() {
                     Icon(
                         Icons.Filled.Settings,
                         null,
-                        modifier = Modifier.size(12.dp),
+                        modifier = Modifier.size(10.dp),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }

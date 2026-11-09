@@ -92,6 +92,22 @@
         <item>@string/dark_ui_auto_mode_custom_bedtime</item>
     </string-array>
 
+    <!-- Only used when a physical light sensor is present. -->
+    <string-array name="dark_ui_scheduler_with_ambient_preference_titles">
+        <item>@string/dark_ui_auto_mode_never</item>
+        <item>@string/dark_ui_auto_mode_custom</item>
+        <item>@string/dark_ui_auto_mode_auto</item>
+        <item>@string/dark_ui_auto_mode_ambient</item>
+    </string-array>
+
+    <string-array name="dark_ui_scheduler_with_bedtime_ambient_preference_titles">
+        <item>@string/dark_ui_auto_mode_never</item>
+        <item>@string/dark_ui_auto_mode_custom</item>
+        <item>@string/dark_ui_auto_mode_auto</item>
+        <item>@string/dark_ui_auto_mode_custom_bedtime</item>
+        <item>@string/dark_ui_auto_mode_ambient</item>
+    </string-array>
+
     <!-- Security settings.  The delay after screen is turned off until device locks.
          These are shown in a list dialog. -->
     <string-array name="lock_after_timeout_entries">

@@ -36,6 +36,7 @@ import com.android.settingslib.preference.PreferenceBinding
 class DarkModeSchedulePreference(
     private var uiModeManager: UiModeManager,
     private var bedtimeSettings: BedtimeSettings,
+    private val hasLightSensor: Boolean = false,
 ) :
     PreferenceMetadata,
     DiscreteStringValue,
@@ -57,19 +58,12 @@ class DarkModeSchedulePreference(
 
     override val values: Int
         get() =
-            if (bedtimeSettings.getBedtimeSettingsIntent() != null) {
-                R.array.dark_ui_scheduler_with_bedtime_preference_titles
-            } else {
-                R.array.dark_ui_scheduler_preference_titles
-            }
+            DarkModeScheduleOptions.titlesResource(
+                hasLightSensor, bedtimeSettings.getBedtimeSettingsIntent() != null
+            )
 
     override val valuesDescription: Int
-        get() =
-            if (bedtimeSettings.getBedtimeSettingsIntent() != null) {
-                R.array.dark_ui_scheduler_with_bedtime_preference_titles
-            } else {
-                R.array.dark_ui_scheduler_preference_titles
-            }
+        get() = values
 
     override fun getSummary(context: Context): CharSequence? = "%s"
 
@@ -119,9 +113,14 @@ class DarkModeSchedulePreference(
             context.getString(R.string.dark_ui_auto_mode_custom) -> {
                 uiModeManager.nightMode = UiModeManager.MODE_NIGHT_CUSTOM
             }
+            context.getString(R.string.dark_ui_auto_mode_ambient) -> {
+                if (!hasLightSensor) return false
+                uiModeManager.nightModeCustomType = UiModeManager.MODE_NIGHT_CUSTOM_TYPE_AMBIENT
+            }
             context.getString(R.string.dark_ui_auto_mode_custom_bedtime) -> {
                 uiModeManager.nightModeCustomType = UiModeManager.MODE_NIGHT_CUSTOM_TYPE_BEDTIME
             }
+            else -> return false
         }
         return true
     }
@@ -135,8 +134,14 @@ class DarkModeSchedulePreference(
                         bedtimeSettings.getBedtimeSettingsIntent() != null &&
                             (uiModeManager.nightModeCustomType ==
                                 UiModeManager.MODE_NIGHT_CUSTOM_TYPE_BEDTIME)
-                    if (isCustomBedtime) R.string.dark_ui_auto_mode_custom_bedtime
-                    else R.string.dark_ui_auto_mode_custom
+                    when {
+                        uiModeManager.nightModeCustomType ==
+                            UiModeManager.MODE_NIGHT_CUSTOM_TYPE_AMBIENT &&
+                            hasLightSensor ->
+                            R.string.dark_ui_auto_mode_ambient
+                        isCustomBedtime -> R.string.dark_ui_auto_mode_custom_bedtime
+                        else -> R.string.dark_ui_auto_mode_custom
+                    }
                 }
 
                 else -> R.string.dark_ui_auto_mode_never

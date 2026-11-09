@@ -61,6 +61,9 @@ class AutoDarkTheme {
 
         if (mode == UiModeManager.MODE_NIGHT_CUSTOM) {
             int modeCustomType = uiModeManager.getNightModeCustomType();
+            if (modeCustomType == UiModeManager.MODE_NIGHT_CUSTOM_TYPE_AMBIENT) {
+                return context.getString(R.string.dark_ui_summary_auto_mode_ambient);
+            }
             if (modeCustomType == MODE_NIGHT_CUSTOM_TYPE_SCHEDULE) {
                 final LocalTime time = active
                         ? uiModeManager.getCustomNightModeEnd()

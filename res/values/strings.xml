@@ -3349,6 +3349,10 @@
     <string name="dark_ui_auto_mode_title">Schedule</string>
     <!-- Dark UI screen, setting option value for Dark UI to *never* turn on/off automatically. [CHAR LIMIT=30] -->
     <string name="dark_ui_auto_mode_never">None</string>
+    <!-- Dark theme schedule option using the device light sensor. [CHAR LIMIT=40] -->
+    <string name="dark_ui_auto_mode_ambient">Based on ambient light</string>
+    <!-- Dark theme summary when ambient light scheduling is selected. [CHAR LIMIT=NONE] -->
+    <string name="dark_ui_summary_auto_mode_ambient">Adjusts to surrounding light when the screen turns on</string>
     <!-- Dark UI screen, setting option value for Dark UI to turn on/off automatically at sunset/sunrise. [CHAR LIMIT=32] -->
     <string name="dark_ui_auto_mode_auto">Turns on from sunset to sunrise</string>
     <!-- Dark UI screen, setting option value for Dark theme to turn on/off automatically according to a user defined schedule. [CHAR LIMIT=32] -->

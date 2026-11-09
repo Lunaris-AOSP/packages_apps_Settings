@@ -56,9 +56,10 @@ public class DarkModeScheduleSelectorController extends BasePreferenceController
     public void displayPreference(PreferenceScreen screen) {
         super.displayPreference(screen);
         mPreference = screen.findPreference(getPreferenceKey());
-        if (mBedtimeSettings.getBedtimeSettingsIntent() != null) {
-            String[] entries = mContext.getResources().getStringArray(
-                    R.array.dark_ui_scheduler_with_bedtime_preference_titles);
+        int titles = DarkModeScheduleOptions.titlesResource(mContext,
+                mBedtimeSettings.getBedtimeSettingsIntent() != null);
+        if (titles != R.array.dark_ui_scheduler_preference_titles) {
+            String[] entries = mContext.getResources().getStringArray(titles);
             mPreference.setEntries(entries);
             mPreference.setEntryValues(entries);
         }
@@ -84,6 +85,12 @@ public class DarkModeScheduleSelectorController extends BasePreferenceController
                 resId = R.string.dark_ui_auto_mode_auto;
                 break;
             case UiModeManager.MODE_NIGHT_CUSTOM:
+                if (mUiModeManager.getNightModeCustomType()
+                        == UiModeManager.MODE_NIGHT_CUSTOM_TYPE_AMBIENT
+                        && DarkModeScheduleOptions.hasLightSensor(mContext)) {
+                    resId = R.string.dark_ui_auto_mode_ambient;
+                    break;
+                }
                 boolean isCustomBedtime = mBedtimeSettings.getBedtimeSettingsIntent() != null
                         && mUiModeManager.getNightModeCustomType()
                         == UiModeManager.MODE_NIGHT_CUSTOM_TYPE_BEDTIME;
@@ -100,7 +107,7 @@ public class DarkModeScheduleSelectorController extends BasePreferenceController
     @Override
     public final boolean onPreferenceChange(Preference preference, Object newValue) {
         final int newMode = mPreference.findIndexOfValue((String) newValue);
-        if (newMode == mCurrentMode) {
+        if (newMode < 0 || newMode == mCurrentMode) {
             return false;
         }
         if (newMode == mPreference.findIndexOfValue(
@@ -124,6 +131,10 @@ public class DarkModeScheduleSelectorController extends BasePreferenceController
         } else if (newMode == mPreference.findIndexOfValue(
                 mContext.getString(R.string.dark_ui_auto_mode_custom))) {
             mUiModeManager.setNightMode(UiModeManager.MODE_NIGHT_CUSTOM);
+        } else if (newMode == mPreference.findIndexOfValue(
+                mContext.getString(R.string.dark_ui_auto_mode_ambient))) {
+            if (!DarkModeScheduleOptions.hasLightSensor(mContext)) return false;
+            mUiModeManager.setNightModeCustomType(UiModeManager.MODE_NIGHT_CUSTOM_TYPE_AMBIENT);
         } else if (newMode == mPreference.findIndexOfValue(
                 mContext.getString(R.string.dark_ui_auto_mode_custom_bedtime))) {
             mUiModeManager.setNightModeCustomType(UiModeManager.MODE_NIGHT_CUSTOM_TYPE_BEDTIME);

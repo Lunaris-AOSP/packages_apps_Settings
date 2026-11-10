@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2017 The Android Open Source Project
+     Copyright (C) 2024-2026 Lunaris AOSP
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -36,18 +37,6 @@
         android:key="battery_chart"
         settings:controller=
             "com.android.settings.fuelgauge.batteryusage.BatteryChartPreferenceController" />
-
-    <PreferenceCategory
-        android:key="screen_on_time_category"
-        settings:controller=
-            "com.android.settings.fuelgauge.batteryusage.ScreenOnTimeController"
-        settings:isPreferenceVisible="false">
-
-        <com.android.settings.fuelgauge.batteryusage.TextViewPreference
-            android:key="screen_on_time_text"
-            settings:isPreferenceVisible="false" />
-
-    </PreferenceCategory>
 
     <PreferenceCategory
         android:key="battery_usage_breakdown"

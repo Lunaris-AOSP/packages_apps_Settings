@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2024-2026 Lunaris AOSP
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources>
+    <color name="battery_graph_surface">@color/settingslib_materialColorSurfaceBright</color>
+    <color name="battery_graph_inset">@color/settingslib_materialColorSurfaceContainerHigh</color>
+    <color name="battery_graph_outline">@color/settingslib_materialColorOutlineVariant</color>
+    <color name="battery_graph_text">@color/settingslib_materialColorOnSurface</color>
+    <color name="battery_graph_secondary">@color/settingslib_materialColorOnSurfaceVariant</color>
+    <color name="battery_graph_selected">@color/settingslib_materialColorPrimaryContainer</color>
+    <color name="battery_graph_selected_text">@color/settingslib_materialColorOnPrimaryContainer</color>
+    <color name="battery_graph_on">@color/settingslib_materialColorPrimary</color>
+    <color name="battery_graph_off">@color/settingslib_materialColorSecondary</color>
+    <color name="battery_graph_off_text">@color/settingslib_materialColorSecondary</color>
+    <color name="battery_graph_charging">#16853F</color>
+
+    <string name="battery_graph_last_day">Last 24 hours</string>
+    <string name="battery_graph_last_week">Last 7 days</string>
+    <string name="battery_graph_screen_usage">Screen Usage</string>
+    <string name="battery_graph_screen_on">Screen on (active)</string>
+    <string name="battery_graph_screen_off">Screen off (active)</string>
+    <string name="battery_graph_since_reset">Used since last reset</string>
+    <string name="battery_usage_breakdown_title_since_last_reset">Battery usage since last reset</string>
+    <string name="battery_graph_charging_hours">Charging hours</string>
+    <string name="battery_graph_hourly_screen_time">Hourly Screen Time</string>
+    <string name="battery_graph_daily_screen_time">Daily Screen Time</string>
+    <string name="battery_graph_legend_on">On</string>
+    <string name="battery_graph_legend_off">Off</string>
+    <string name="battery_graph_now">Now</string>
+    <string name="battery_graph_loading">Loading battery history…</string>
+    <string name="battery_graph_empty">No battery history available</string>
+    <string name="battery_graph_unavailable">—</string>
+    <string name="battery_graph_info_description">About active battery usage</string>
+    <string name="battery_graph_level_description">%1$s: %2$s</string>
+    <string name="battery_graph_activity_description">%1$s: screen on %2$s, screen off active %3$s</string>
+    <string name="battery_graph_minutes">%1$dm</string>
+    <string name="battery_graph_hours">%1$dh</string>
+    <string name="battery_graph_reset">Reset battery usage</string>
+    <string name="battery_graph_reset_title">Reset battery usage?</string>
+    <string name="battery_graph_reset_message">This clears the last 24 hours chart and app usage statistics. The last 7 days chart is kept. New usage will be recorded from now on.</string>
+    <string name="battery_graph_reset_confirm">Reset</string>
+    <string name="battery_graph_resetting">Resetting battery usage…</string>
+    <string name="battery_graph_reset_success">Battery usage reset</string>
+    <string name="battery_graph_reset_failed">Couldn’t finish resetting battery usage. Please try again.</string>
+    <string name="battery_graph_usage_info_reset">Active time on battery since the last reset, including time with the screen on and time the device was awake with the screen off. Reset clears the last 24 hours chart and app usage statistics, while keeping the last 7 days chart.</string>
+
+    <style name="BatteryGraphText">
+        <item name="android:textAppearance">@style/TextAppearance.SettingsLib.BodySmall</item>
+        <item name="android:textColor">@color/battery_graph_secondary</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="BatteryGraphHeading" parent="BatteryGraphText">
+        <item name="android:textAppearance">@style/TextAppearance.SettingsLib.TitleMedium.Emphasized</item>
+        <item name="android:textColor">@color/battery_graph_text</item>
+    </style>
+    <style name="BatteryGraphValue" parent="BatteryGraphHeading">
+        <item name="android:textColor">@color/battery_graph_on</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="BatteryGraphTab" parent="SettingsLibButtonStyle.Expressive.Tonal">
+        <item name="android:stateListAnimator">@animator/battery_graph_tab_press</item>
+        <item name="android:textColor">@color/battery_graph_tab_text</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:paddingVertical">12dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="backgroundTint">@color/battery_graph_tab_background</item>
+        <item name="shapeAppearance">@style/BatteryGraphTabShape</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+        <item name="cornerRadius">@null</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+    <style name="BatteryGraphTabShape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>

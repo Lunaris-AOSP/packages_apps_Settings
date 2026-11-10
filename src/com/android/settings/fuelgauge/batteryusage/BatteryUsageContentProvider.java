@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2024-2026 Lunaris AOSP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,7 +162,21 @@ public class BatteryUsageContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+        synchronized (BatteryUsageResetter.LOCK) {
+            return insertBatteryData(uri, contentValues);
+        }
+    }
+
+    private Uri insertBatteryData(Uri uri, ContentValues contentValues) {
         try {
+            final long resetTimestamp = BatteryUsageResetter.getResetTimestamp(getContext());
+            if (resetTimestamp > 0 && contentValues != null
+                    && contentValues.containsKey("timestamp")) {
+                final Long timestamp = contentValues.getAsLong("timestamp");
+                if (timestamp != null && timestamp < resetTimestamp) {
+                    return null;
+                }
+            }
             switch (sUriMatcher.match(uri)) {
                 case BATTERY_STATE_CODE:
                     mBatteryStateDao.insert(BatteryState.create(contentValues));
@@ -370,7 +385,10 @@ public class BatteryUsageContentProvider extends ContentProvider {
     private long getQueryTimestamp(Uri uri) {
         Log.d(TAG, "getQueryTimestamp from uri: " + uri);
         final long defaultTimestamp = mClock.millis() - QUERY_DURATION_HOURS.toMillis();
-        return getQueryValueFromUri(uri, DatabaseUtils.QUERY_KEY_TIMESTAMP, defaultTimestamp);
+        final long queryTimestamp = getQueryValueFromUri(
+                uri, DatabaseUtils.QUERY_KEY_TIMESTAMP, defaultTimestamp);
+        final long resetTimestamp = BatteryUsageResetter.getResetTimestamp(getContext());
+        return resetTimestamp > 0 ? Math.max(queryTimestamp, resetTimestamp) : queryTimestamp;
     }
 
     private long getQueryValueFromUri(Uri uri, String key, long defaultValue) {

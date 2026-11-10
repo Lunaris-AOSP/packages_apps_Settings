@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2024-2026 Lunaris AOSP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +26,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.provider.SearchIndexableResource;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,6 +50,7 @@ import com.android.settingslib.core.AbstractPreferenceController;
 import com.android.settingslib.search.SearchIndexable;
 import com.android.settingslib.utils.AsyncLoaderCompat;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -65,6 +69,8 @@ public class PowerUsageAdvanced extends PowerUsageBase {
     private static final String TAG = "AdvancedBatteryUsage";
     private static final String KEY_REFRESH_TYPE = "refresh_type";
     private static final String KEY_BATTERY_CHART = "battery_chart";
+    private static final int BATTERY_USAGE_GRAPH_LOADER = 4;
+    private static final int BATTERY_USAGE_RESET_LOADER = 5;
 
     @VisibleForTesting
     BatteryHistoryPreference mHistPref;
@@ -73,7 +79,66 @@ public class PowerUsageAdvanced extends PowerUsageBase {
     final BatteryLevelDataLoaderCallbacks mBatteryLevelDataLoaderCallbacks =
             new BatteryLevelDataLoaderCallbacks();
 
+    private final LoaderManager.LoaderCallbacks<BatteryUsageGraphData> mGraphLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<BatteryUsageGraphData>() {
+                @Override
+                public Loader<BatteryUsageGraphData> onCreateLoader(int id, Bundle args) {
+                    return new BatteryUsageGraphLoader(getContext().getApplicationContext());
+                }
+
+                @Override
+                public void onLoadFinished(Loader<BatteryUsageGraphData> loader,
+                        BatteryUsageGraphData data) {
+                    if (mHistPref != null && !mResetting) {
+                        mHistPref.setGraphData(data);
+                    }
+                }
+
+                @Override
+                public void onLoaderReset(Loader<BatteryUsageGraphData> loader) {}
+            };
+
+    private final LoaderManager.LoaderCallbacks<Boolean> mResetLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<Boolean>() {
+                @Override
+                public Loader<Boolean> onCreateLoader(int id, Bundle args) {
+                    return new AsyncLoaderCompat<Boolean>(requireContext().getApplicationContext()) {
+                        @Override
+                        public Boolean loadInBackground() {
+                            try {
+                                BatteryUsageResetter.reset(getContext());
+                                return true;
+                            } catch (IOException | RemoteException | RuntimeException e) {
+                                Log.e(TAG, "Unable to reset battery usage", e);
+                                return false;
+                            }
+                        }
+
+                        @Override
+                        protected void onDiscardResult(Boolean result) {}
+                    };
+                }
+
+                @Override
+                public void onLoadFinished(Loader<Boolean> loader, Boolean success) {
+                    mResetting = false;
+                    mHistPref.setResetAction(PowerUsageAdvanced.this::resetBatteryUsage, false);
+                    mHistPref.setGraphData(null);
+                    getLoaderManagerForCurrentFragment().destroyLoader(BATTERY_USAGE_RESET_LOADER);
+                    Toast.makeText(requireContext(), Boolean.TRUE.equals(success)
+                            ? R.string.battery_graph_reset_success : R.string.battery_graph_reset_failed,
+                            Toast.LENGTH_LONG).show();
+                    mIsChartDataLoaded = false;
+                    restartBatteryStatsLoader(BatteryUpdateType.MANUAL);
+                }
+
+                @Override
+                public void onLoaderReset(Loader<Boolean> loader) {}
+            };
+
     private boolean mIsChartDataLoaded = false;
+    private volatile boolean mResetting;
+    private volatile int mDataGeneration;
     private long mStartTimestamp;
     private Map<Integer, Map<Integer, BatteryDiffData>> mBatteryUsageMap;
 
@@ -101,6 +166,12 @@ public class PowerUsageAdvanced extends PowerUsageBase {
         super.onCreate(icicle);
         mHistPref = findPreference(KEY_BATTERY_CHART);
         setBatteryChartPreferenceController();
+        final LoaderManager loaderManager = getLoaderManagerForCurrentFragment();
+        mResetting = loaderManager.getLoader(BATTERY_USAGE_RESET_LOADER) != null;
+        mHistPref.setResetAction(this::resetBatteryUsage, mResetting);
+        if (mResetting) {
+            loaderManager.initLoader(BATTERY_USAGE_RESET_LOADER, null, mResetLoaderCallbacks);
+        }
         AsyncTask.execute(() -> {
             if (getContext() != null) {
                 BootBroadcastReceiver.invokeJobRecheck(getContext());
@@ -174,14 +245,12 @@ public class PowerUsageAdvanced extends PowerUsageBase {
         mBatteryChartPreferenceController =
                 new BatteryChartPreferenceController(
                         context, getSettingsLifecycle(), (SettingsActivity) getActivity());
-        mScreenOnTimeController = new ScreenOnTimeController(context);
         mBatteryUsageBreakdownController =
                 new BatteryUsageBreakdownController(
                         context, getSettingsLifecycle(), (SettingsActivity) getActivity(), this);
 
         controllers.add(mBatteryTipsController);
         controllers.add(mBatteryChartPreferenceController);
-        controllers.add(mScreenOnTimeController);
         controllers.add(mBatteryUsageBreakdownController);
         setBatteryChartPreferenceController();
         mBatteryChartPreferenceController.setOnSelectedIndexUpdatedListener(
@@ -199,10 +268,15 @@ public class PowerUsageAdvanced extends PowerUsageBase {
 
     @Override
     protected void restartBatteryStatsLoader(int refreshType) {
+        if (mResetting) {
+            return;
+        }
         final Bundle bundle = new Bundle();
         bundle.putInt(KEY_REFRESH_TYPE, refreshType);
         if (!mIsChartDataLoaded) {
             mIsChartDataLoaded = true;
+            mDataGeneration++;
+            restartLoader(BATTERY_USAGE_GRAPH_LOADER, bundle, mGraphLoaderCallbacks);
             mBatteryLevelData = null;
             mBatteryUsageMap = null;
             mHighlightEventWrapper = null;
@@ -211,6 +285,26 @@ public class PowerUsageAdvanced extends PowerUsageBase {
                     bundle,
                     mBatteryLevelDataLoaderCallbacks);
         }
+    }
+
+    private void resetBatteryUsage() {
+        if (mResetting || !BatteryUsageResetter.isAvailable(requireContext())) {
+            return;
+        }
+        mResetting = true;
+        mDataGeneration++;
+        mBatteryUsageMap = null;
+        mBatteryLevelData = null;
+        mHighlightEventWrapper = null;
+        mHistPref.setResetAction(this::resetBatteryUsage, true);
+        mHistPref.setGraphData(null);
+        mBatteryChartPreferenceController.onBatteryLevelDataUpdate(null);
+        findPreference("battery_usage_breakdown").setVisible(false);
+        findPreference("battery_tips_card").setVisible(false);
+        final LoaderManager loaderManager = getLoaderManagerForCurrentFragment();
+        loaderManager.destroyLoader(BATTERY_USAGE_GRAPH_LOADER);
+        loaderManager.destroyLoader(LoaderIndex.BATTERY_LEVEL_DATA_LOADER);
+        loaderManager.initLoader(BATTERY_USAGE_RESET_LOADER, null, mResetLoaderCallbacks);
     }
 
     private void onBatteryLevelDataUpdate(BatteryLevelData batteryLevelData) {
@@ -229,7 +323,11 @@ public class PowerUsageAdvanced extends PowerUsageBase {
         }
     }
 
-    private void onBatteryDiffDataMapUpdate(Map<Long, BatteryDiffData> batteryDiffDataMap) {
+    private void onBatteryDiffDataMapUpdate(
+            Map<Long, BatteryDiffData> batteryDiffDataMap, int generation) {
+        if (mResetting || generation != mDataGeneration) {
+            return;
+        }
         if (!isVisible() && !isResumed()) {
             Log.w(TAG, "onBatteryDiffDataMapUpdate: fragment not ready");
             return;
@@ -239,6 +337,9 @@ public class PowerUsageAdvanced extends PowerUsageBase {
             return;
         }
         mHandler.post(() -> {
+            if (mResetting || generation != mDataGeneration || !isAdded()) {
+                return;
+            }
             mBatteryUsageMap =
                     DataProcessor.generateBatteryUsageMap(
                             getContext(), batteryDiffDataMap, mBatteryLevelData.orElse(null));
@@ -258,7 +359,6 @@ public class PowerUsageAdvanced extends PowerUsageBase {
 
     private void onSelectedSlotDataUpdated() {
         if (mBatteryChartPreferenceController == null
-                || mScreenOnTimeController == null
                 || mBatteryUsageBreakdownController == null
                 || mBatteryUsageMap == null) {
             return;
@@ -271,11 +371,9 @@ public class PowerUsageAdvanced extends PowerUsageBase {
         final String accessibilitySlotInformation =
                 mBatteryChartPreferenceController.getSlotInformation(
                         /* isAccessibilityText= */ true);
-        final BatteryDiffData slotUsageData = mBatteryUsageMap.get(dailyIndex).get(hourlyIndex);
-        mScreenOnTimeController.handleScreenOnTimeUpdated(
-                slotUsageData != null ? slotUsageData.getScreenOnTime() : 0L,
-                slotInformation,
-                accessibilitySlotInformation);
+        final Map<Integer, BatteryDiffData> dayUsageData = mBatteryUsageMap.get(dailyIndex);
+        final BatteryDiffData slotUsageData =
+                dayUsageData == null ? null : dayUsageData.get(hourlyIndex);
         // Hide card tips if the related highlight slot was clicked.
         if (isAppsAnomalyEventFocused()) {
             mBatteryTipsController.acceptTipsCard();
@@ -295,6 +393,7 @@ public class PowerUsageAdvanced extends PowerUsageBase {
     }
 
     private void detectAnomaly() {
+        final int generation = mDataGeneration;
         mExecutor.execute(
                 () -> {
                     final PowerUsageFeatureProvider powerUsageFeatureProvider =
@@ -304,7 +403,11 @@ public class PowerUsageAdvanced extends PowerUsageBase {
                                     getContext(),
                                     /* displayDrain= */ 0,
                                     DetectRequestSourceType.TYPE_USAGE_UI);
-                    mHandler.post(() -> onAnomalyDetected(anomalyEventList));
+                    mHandler.post(() -> {
+                        if (!mResetting && generation == mDataGeneration) {
+                            onAnomalyDetected(anomalyEventList);
+                        }
+                    });
                 });
     }
 
@@ -510,7 +613,6 @@ public class PowerUsageAdvanced extends PowerUsageBase {
                     controllers.add(
                             new BatteryChartPreferenceController(
                                     context, null /* lifecycle */, null /* activity */));
-                    controllers.add((new ScreenOnTimeController(context)));
                     controllers.add(
                             new BatteryUsageBreakdownController(
                                     context,
@@ -526,6 +628,7 @@ public class PowerUsageAdvanced extends PowerUsageBase {
             implements LoaderManager.LoaderCallbacks<BatteryLevelData> {
         @Override
         public Loader<BatteryLevelData> onCreateLoader(int id, Bundle bundle) {
+            final int generation = mDataGeneration;
             return new AsyncLoaderCompat<BatteryLevelData>(getContext().getApplicationContext()) {
                 @Override
                 protected void onDiscardResult(BatteryLevelData result) {}
@@ -538,7 +641,7 @@ public class PowerUsageAdvanced extends PowerUsageBase {
                             getLifecycle(),
                             new UserIdsSeries(context, /* isNonUIRequest= */ false),
                             /* isFromPeriodJob= */ false,
-                            PowerUsageAdvanced.this::onBatteryDiffDataMapUpdate);
+                            data -> onBatteryDiffDataMapUpdate(data, generation));
                 }
             };
         }

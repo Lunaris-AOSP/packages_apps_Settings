@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2024-2026 Lunaris AOSP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,7 +179,8 @@ public final class DatabaseUtils {
                         userId, latestTimestampString, (System.currentTimeMillis() - startTime)));
         // Use (latestTimestamp + 1) here to avoid loading the events of the latestTimestamp
         // repeatedly.
-        return Math.max(latestTimestamp + 1, earliestTimestamp);
+        return Math.max(Math.max(latestTimestamp + 1, earliestTimestamp),
+                BatteryUsageResetter.getResetTimestamp(context));
     }
 
     /** Returns the current user data in app usage event table. */
@@ -905,6 +907,7 @@ public final class DatabaseUtils {
 
     private static void clearDataAfterTimeChangedIfNeededInternal(Context context) {
         final long currentTime = System.currentTimeMillis();
+        BatteryUsageResetter.onTimeChanged(context, currentTime);
         final String logInfo =
                 String.format(Locale.ENGLISH, "clear data after current time = %d", currentTime);
         Log.d(TAG, logInfo);

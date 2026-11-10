@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2024-2026 Lunaris AOSP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,7 +230,7 @@ public class BatteryUsageBreakdownController extends BasePreferenceController
         mFooterPreference = screen.findPreference(FOOTER_PREFERENCE_KEY);
         mBatteryUsageBreakdownTitleLastFullChargeText =
                 mPrefContext.getString(
-                        R.string.battery_usage_breakdown_title_since_last_full_charge);
+                        R.string.battery_usage_breakdown_title_since_last_reset);
         final String formatPercentage =
                 Utils.formatPercentage(BatteryDiffData.SMALL_PERCENTAGE_THRESHOLD, false);
         mPercentLessThanThresholdText =

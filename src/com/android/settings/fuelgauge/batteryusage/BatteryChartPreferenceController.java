@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2024-2026 Lunaris AOSP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +93,8 @@ public class BatteryChartPreferenceController extends AbstractPreferenceControll
 
     private boolean mIs24HourFormat;
     private View mBatteryChartViewGroup;
+    private BatteryUsageGraphView mUsageGraphView;
+    private BatteryLevelData mGraphLevelData;
     private BatteryChartViewModel mDailyViewModel;
     private List<BatteryChartViewModel> mHourlyViewModels;
     private OnSelectedIndexUpdatedListener mOnSelectedIndexUpdatedListener;
@@ -163,6 +166,7 @@ public class BatteryChartPreferenceController extends AbstractPreferenceControll
             BatteryDiffEntry.clearCache();
         }
         mHandler.removeCallbacksAndMessages(/* token= */ null);
+        mUsageGraphView = null;
     }
 
     @Override
@@ -194,6 +198,7 @@ public class BatteryChartPreferenceController extends AbstractPreferenceControll
     }
 
     void onBatteryLevelDataUpdate(final BatteryLevelData batteryLevelData) {
+        mGraphLevelData = batteryLevelData;
         Log.d(TAG, "onBatteryLevelDataUpdate: " + batteryLevelData);
         mMetricsFeatureProvider.action(
                 mPrefContext,
@@ -225,6 +230,7 @@ public class BatteryChartPreferenceController extends AbstractPreferenceControll
                             mHourlyChartLabelTextGenerator.updateSpecialCaseContext(
                                     batteryLevelData)));
         }
+        normalizeGraphSelection();
         refreshUi();
     }
 
@@ -266,10 +272,88 @@ public class BatteryChartPreferenceController extends AbstractPreferenceControll
                         mDailyChartIndex, mHourlyChartIndex));
         refreshUi();
         // The highlight slot must be selected.
-        mHandler.post(
-                () ->
-                        mDailyChartView.setAccessibilityPaneTitle(
-                                getAccessibilityAnnounceMessage(/* isSlotSelected= */ true)));
+        mHandler.post(() -> {
+            final View chart = mUsageGraphView != null ? mUsageGraphView : mDailyChartView;
+            if (chart != null) {
+                chart.setAccessibilityPaneTitle(
+                        getAccessibilityAnnounceMessage(/* isSlotSelected= */ true));
+            }
+        });
+        if (mOnSelectedIndexUpdatedListener != null) {
+            mOnSelectedIndexUpdatedListener.onSelectedIndexUpdated();
+        }
+    }
+
+    void setBatteryUsageGraphView(BatteryUsageGraphView graphView) {
+        mUsageGraphView = graphView;
+        if (graphView != null) {
+            graphView.setOnBarSelectedListener(this::selectGraphBar);
+            updateGraphSelection();
+        }
+    }
+
+    private void selectGraphBar(long timestamp, boolean daily) {
+        if (mGraphLevelData == null) {
+            return;
+        }
+        final android.util.Pair<Integer, Integer> slot =
+                mGraphLevelData.getIndexByTimestamps(timestamp, timestamp + 1);
+        if (slot.first < 0 || slot.second < 0) {
+            clearGraphSelection();
+            return;
+        }
+        final int hourlyIndex = daily ? SELECTED_INDEX_ALL : slot.second;
+        if (mDailyChartIndex == slot.first && mHourlyChartIndex == hourlyIndex) {
+            clearGraphSelection();
+            return;
+        }
+        mDailyChartIndex = slot.first;
+        mHourlyChartIndex = hourlyIndex;
+        updateGraphSelection();
+        if (mOnSelectedIndexUpdatedListener != null) {
+            mOnSelectedIndexUpdatedListener.onSelectedIndexUpdated();
+        }
+    }
+
+    private void normalizeGraphSelection() {
+        if (mHourlyViewModels == null || mDailyChartIndex < SELECTED_INDEX_ALL
+                || mDailyChartIndex >= mHourlyViewModels.size()) {
+            mDailyChartIndex = SELECTED_INDEX_ALL;
+        }
+        if (mDailyChartIndex == SELECTED_INDEX_ALL || mHourlyChartIndex < SELECTED_INDEX_ALL
+                || mHourlyChartIndex >= mHourlyViewModels.get(mDailyChartIndex).size() - 1) {
+            mHourlyChartIndex = SELECTED_INDEX_ALL;
+        }
+    }
+
+    private void updateGraphSelection() {
+        if (mUsageGraphView == null) {
+            return;
+        }
+        if (mGraphLevelData == null) {
+            mUsageGraphView.setSelectedRange(0, 0);
+            return;
+        }
+        normalizeGraphSelection();
+        if (mDailyChartIndex == SELECTED_INDEX_ALL) {
+            mUsageGraphView.setSelectedRange(0, 0);
+            return;
+        }
+        final List<Long> timestamps = mGraphLevelData.getHourlyBatteryLevelsPerDay()
+                .get(mDailyChartIndex).getTimestamps();
+        final int start = mHourlyChartIndex == SELECTED_INDEX_ALL ? 0 : mHourlyChartIndex;
+        final int end = mHourlyChartIndex == SELECTED_INDEX_ALL
+                ? timestamps.size() - 1 : mHourlyChartIndex + 1;
+        mUsageGraphView.setSelectedRange(timestamps.get(start), timestamps.get(end));
+    }
+
+    void clearGraphSelection() {
+        if (mDailyChartIndex == SELECTED_INDEX_ALL && mHourlyChartIndex == SELECTED_INDEX_ALL) {
+            return;
+        }
+        mDailyChartIndex = SELECTED_INDEX_ALL;
+        mHourlyChartIndex = SELECTED_INDEX_ALL;
+        updateGraphSelection();
         if (mOnSelectedIndexUpdatedListener != null) {
             mOnSelectedIndexUpdatedListener.onSelectedIndexUpdated();
         }
@@ -367,6 +451,10 @@ public class BatteryChartPreferenceController extends AbstractPreferenceControll
 
     @VisibleForTesting
     void refreshUi() {
+        if (mUsageGraphView != null) {
+            updateGraphSelection();
+            return;
+        }
         if (mDailyChartView == null || mHourlyChartView == null) {
             // Chart views are not initialized.
             return;
@@ -470,7 +558,7 @@ public class BatteryChartPreferenceController extends AbstractPreferenceControll
         final String slotInformationMessage =
                 slotInformation == null
                         ? mPrefContext.getString(
-                                R.string.battery_usage_breakdown_title_since_last_full_charge)
+                                R.string.battery_usage_breakdown_title_since_last_reset)
                         : mPrefContext.getString(
                                 R.string.battery_usage_breakdown_title_for_slot, slotInformation);
         final String batteryLevelPercentageMessage = getBatteryLevelPercentageInfo();

@@ -82,11 +82,43 @@ final class BatteryUsageGraphHistory {
                 history.addInterval(start, end, level, (flags & CHARGING) != 0,
                         (flags & SCREEN_ON) != 0, (flags & CPU_RUNNING) != 0);
             }
-            history.mLastEnd = Math.max(history.mLastEnd, Math.min(capturedThrough, now));
         } catch (FileNotFoundException e) {
             return history;
         }
         return history;
+    }
+
+    long getStartTimestamp() {
+        return mStart;
+    }
+
+    long getEndTimestamp() {
+        return mLastEnd;
+    }
+
+    void merge(BatteryUsageGraphHistory history) {
+        if (history.mIntervals.isEmpty()) {
+            return;
+        }
+        final long start = history.mIntervals.get(0).start;
+        final long end = history.mIntervals.get(history.mIntervals.size() - 1).end;
+        final List<Interval> previous = new ArrayList<>(mIntervals);
+        mIntervals.clear();
+        mLastEnd = Long.MIN_VALUE;
+        for (Interval interval : previous) {
+            addInterval(interval, interval.start, Math.min(interval.end, start));
+        }
+        for (Interval interval : history.mIntervals) {
+            addInterval(interval, interval.start, interval.end);
+        }
+        for (Interval interval : previous) {
+            addInterval(interval, Math.max(interval.start, end), interval.end);
+        }
+    }
+
+    private void addInterval(Interval interval, long start, long end) {
+        addInterval(start, end, interval.level, (interval.flags & CHARGING) != 0,
+                (interval.flags & SCREEN_ON) != 0, (interval.flags & CPU_RUNNING) != 0);
     }
 
     void addInterval(long start, long end, int level, boolean charging,

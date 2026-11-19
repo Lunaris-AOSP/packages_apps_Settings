@@ -39,31 +39,79 @@ final class BatteryUsageGraphLoader extends AsyncLoaderCompat<BatteryUsageGraphD
 
     @Override
     public BatteryUsageGraphData loadInBackground() {
-        final long now = System.currentTimeMillis();
-        try {
-            final long lastFullCharge = DatabaseUtils.getLastFullChargeTime(getContext());
-            final long resetTimestamp = BatteryUsageResetter.getResetTimestamp(getContext());
-            final BatteryUsageGraphData.Builder builder = new BatteryUsageGraphData.Builder(
-                    now, resetTimestamp > 0 ? resetTimestamp : lastFullCharge,
-                    TimeZone.getDefault(), resetTimestamp > 0);
-            loadHistory(getContext(), now).addTo(builder);
-            return builder.build();
-        } catch (RuntimeException | IOException e) {
-            Log.w(TAG, "Unable to load battery graph history", e);
-            return new BatteryUsageGraphData.Builder(now, 0, TimeZone.getDefault()).build();
+        synchronized (BatteryUsageResetter.LOCK) {
+            final long now = System.currentTimeMillis();
+            try {
+                final long lastFullCharge = DatabaseUtils.getLastFullChargeTime(getContext());
+                final long resetTimestamp = BatteryUsageResetter.getResetTimestamp(getContext());
+                final BatteryUsageGraphData.Builder builder = new BatteryUsageGraphData.Builder(
+                        now, resetTimestamp > 0 ? resetTimestamp : lastFullCharge,
+                        TimeZone.getDefault(), resetTimestamp > 0);
+                BatteryUsageGraphHistory history;
+                try {
+                    history = loadHistory(getContext(), now);
+                } catch (RuntimeException | IOException e) {
+                    Log.w(TAG, "Unable to refresh battery graph history", e);
+                    history = loadSavedHistory(getContext(), now);
+                }
+                try {
+                    history.save(getContext());
+                } catch (RuntimeException | IOException e) {
+                    Log.w(TAG, "Unable to save battery graph history", e);
+                }
+                history.addTo(builder);
+                return builder.build();
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Unable to load battery graph history", e);
+                return new BatteryUsageGraphData.Builder(now, 0, TimeZone.getDefault()).build();
+            }
         }
     }
 
     static BatteryUsageGraphHistory loadHistory(Context context, long now) throws IOException {
-        final BatteryUsageGraphHistory history =
-                BatteryUsageGraphHistory.load(context, now, TimeZone.getDefault());
-        try (BatteryUsageStats stats = context.getSystemService(BatteryStatsManager.class)
-                .getBatteryUsageStats(new BatteryUsageStatsQuery.Builder()
-                        .includeBatteryHistory().setMaxStatsAgeMs(0).build());
-                BatteryStatsHistoryIterator iterator = stats.iterateBatteryStatsHistory()) {
-            readHistory(iterator, history, Math.min(now, stats.getStatsEndTimestamp()));
+        synchronized (BatteryUsageResetter.LOCK) {
+            final BatteryUsageGraphHistory history = loadSavedHistory(context, now);
+            try (BatteryUsageStats stats = context.getSystemService(BatteryStatsManager.class)
+                    .getBatteryUsageStats(new BatteryUsageStatsQuery.Builder()
+                            .includeBatteryHistory()
+                            .setPreferredHistoryDurationMs(now - history.getStartTimestamp())
+                            .setMaxStatsAgeMs(0).build())) {
+                readHistory(stats, history, now);
+            }
+            return history;
         }
-        return history;
+    }
+
+    static void recordHistory(Context context, BatteryUsageStats stats) throws IOException {
+        synchronized (BatteryUsageResetter.LOCK) {
+            final long now = System.currentTimeMillis();
+            final BatteryUsageGraphHistory history = loadSavedHistory(context, now);
+            readHistory(stats, history, now);
+            history.save(context);
+        }
+    }
+
+    private static BatteryUsageGraphHistory loadSavedHistory(Context context, long now) {
+        try {
+            return BatteryUsageGraphHistory.load(context, now, TimeZone.getDefault());
+        } catch (IOException e) {
+            Log.w(TAG, "Unable to read saved battery graph history", e);
+            return new BatteryUsageGraphHistory(now, TimeZone.getDefault());
+        }
+    }
+
+    private static void readHistory(BatteryUsageStats stats, BatteryUsageGraphHistory history,
+            long now) {
+        final long endTimestamp = Math.min(now, stats.getStatsEndTimestamp());
+        if (endTimestamp < history.getEndTimestamp()) {
+            return;
+        }
+        final BatteryUsageGraphHistory recent =
+                new BatteryUsageGraphHistory(now, TimeZone.getDefault());
+        try (BatteryStatsHistoryIterator iterator = stats.iterateBatteryStatsHistory()) {
+            readHistory(iterator, recent, endTimestamp);
+        }
+        history.merge(recent);
     }
 
     private static void readHistory(BatteryStatsHistoryIterator iterator,

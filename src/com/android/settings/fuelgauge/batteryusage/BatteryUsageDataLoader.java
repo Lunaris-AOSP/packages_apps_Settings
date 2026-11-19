@@ -62,6 +62,11 @@ public final class BatteryUsageDataLoader {
         final long currentTime = System.currentTimeMillis();
         try (BatteryUsageStats batteryUsageStats = DataProcessor.getBatteryUsageStats(
                 context, /* isFromPeriodJob= */ true)) {
+            try {
+                BatteryUsageGraphLoader.recordHistory(context, batteryUsageStats);
+            } catch (RuntimeException | IOException e) {
+                Log.w(TAG, "Unable to save battery graph history", e);
+            }
             final List<BatteryEntry> batteryEntryList =
                     sFakeBatteryEntryListSupplier != null
                             ? sFakeBatteryEntryListSupplier.get()

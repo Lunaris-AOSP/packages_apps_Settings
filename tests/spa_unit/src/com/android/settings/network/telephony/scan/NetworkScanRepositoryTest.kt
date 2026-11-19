@@ -32,6 +32,8 @@ import android.telephony.TelephonyManager.NETWORK_CLASS_BITMASK_5G
 import android.telephony.TelephonyScanManager
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.android.internal.telephony.CellNetworkScanResult
+import com.android.internal.telephony.OperatorInfo
 import com.android.settingslib.spa.testutils.firstWithTimeoutOrNull
 import com.android.settingslib.spa.testutils.toListWithTimeout
 import com.google.common.truth.Truth.assertThat
@@ -117,14 +119,39 @@ class NetworkScanRepositoryTest {
         }
         delay(100)
 
-        callback?.onError(1)
+        callback?.onError(NetworkScan.ERROR_RADIO_INTERFACE_ERROR)
 
         assertThat(listDeferred.await()).containsExactly(
             NetworkScanRepository.NetworkScanResult(
                 state = NetworkScanRepository.NetworkScanState.ERROR,
                 cellInfos = emptyList(),
+                errorCode = NetworkScan.ERROR_RADIO_INTERFACE_ERROR,
             )
         )
+    }
+
+    @Test
+    fun networkScanFlow_unsupportedScan_fallsBackToLegacyApi(): Unit = runBlocking {
+        mockTelephonyManager.stub {
+            on { availableNetworks } doReturn CellNetworkScanResult(
+                CellNetworkScanResult.STATUS_SUCCESS,
+                listOf(OperatorInfo(LONG, SHORT, "00101", "current")),
+            )
+        }
+        val listDeferred = async {
+            repository.networkScanFlow().toListWithTimeout()
+        }
+        delay(100)
+
+        callback?.onError(NetworkScan.ERROR_INVALID_SCAN)
+
+        val results = listDeferred.await()
+        assertThat(results).hasSize(1)
+        assertThat(results[0].state).isEqualTo(NetworkScanRepository.NetworkScanState.COMPLETE)
+        assertThat(results[0].cellInfos).hasSize(1)
+        assertThat(results[0].cellInfos[0]).isInstanceOf(CellInfoGsm::class.java)
+        assertThat(results[0].cellInfos[0].cellIdentity.operatorAlphaLong).isEqualTo(LONG)
+        assertThat(results[0].cellInfos[0].isRegistered).isTrue()
     }
 
     @Test

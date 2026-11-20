@@ -225,7 +225,7 @@ class ComposeHomepageController(private val activity: SettingsHomepageActivity) 
             val insets = windowInsets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
-            v.setPadding(insets.left, 0, insets.right, insets.bottom)
+            v.setPadding(insets.left, 0, insets.right, 0)
             windowInsets
         }
     }

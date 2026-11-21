@@ -17,7 +17,8 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/lock_screen_notifs_title"
-    xmlns:settings="http://schemas.android.com/apk/res-auto">
+    xmlns:settings="http://schemas.android.com/apk/res-auto"
+    xmlns:lunaris="http://schemas.android.com/apk/res/com.android.settings">
 
     <com.android.settingslib.widget.MainSwitchPreference
         android:key="lock_screen_notification_global_pref"
@@ -43,6 +44,53 @@
         android:selectable="false"
         android:layout="@layout/notification_ls_minimalism_selector"
         settings:controller="com.android.settings.notification.lockscreen.MinimalismPreferenceController" />
+
+    <PreferenceCategory
+        android:key="lock_screen_notification_appearance"
+        android:title="@string/lock_screen_notification_appearance_title"
+        settings:controller="org.lunaris.settings.fragments.notifications.LockScreenNotificationStyleController">
+
+        <Preference
+            android:key="lock_screen_notification_style_hint"
+            android:summary="@string/lock_screen_notification_style_hint"
+            android:selectable="false"
+            settings:searchable="false" />
+
+        <SwitchPreferenceCompat
+            android:key="lock_screen_moto_compact_notifications"
+            android:title="@string/lock_screen_moto_compact_notifications_title"
+            android:summary="@string/lock_screen_moto_compact_notifications_summary"
+            android:persistent="false" />
+
+        <SwitchPreferenceCompat
+            android:key="lock_screen_stacked_notifications"
+            android:title="@string/lock_screen_stacked_notifications_title"
+            android:summary="@string/lock_screen_stacked_notifications_summary"
+            android:persistent="false" />
+
+        <SwitchPreferenceCompat
+            android:key="lock_screen_notifications_bottom_anchored"
+            android:title="@string/lock_screen_notifications_bottom_anchored_title"
+            android:summary="@string/lock_screen_notifications_bottom_anchored_summary"
+            android:persistent="false" />
+
+        <org.lunaris.settings.preferences.SystemSettingSeekBarPreference
+            android:key="lock_screen_notifications_anchor_position"
+            android:title="@string/lock_screen_notifications_anchor_position_title"
+            android:summary="@string/lock_screen_notifications_anchor_position_summary"
+            android:defaultValue="88"
+            lunaris:min="10"
+            android:max="100"
+            lunaris:interval="1"
+            lunaris:units="%" />
+
+        <SwitchPreferenceCompat
+            android:key="lock_screen_notifications_above_clock"
+            android:title="@string/notifications_above_clock_title"
+            android:summary="@string/notifications_above_clock_summary"
+            android:persistent="false" />
+
+    </PreferenceCategory>
 
     <PreferenceCategory
         android:key="lockscreen_notification_what_to_show"

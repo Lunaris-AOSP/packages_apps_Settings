@@ -208,6 +208,7 @@ import com.android.settings.security.SecurityAdvancedSettings;
 import com.android.settings.security.SecuritySettings;
 import com.android.settings.shortcut.CreateShortcut;
 import com.android.settings.sound.MediaControlsSettings;
+import com.android.settings.sound.VolumeSteps;
 import com.android.settings.supervision.SupervisionDashboardFragment;
 import com.android.settings.support.SupportDashboardActivity;
 import com.android.settings.system.ResetDashboardFragment;
@@ -404,6 +405,7 @@ public class SettingsGateway {
             InteractAcrossProfilesSettings.class.getName(),
             InteractAcrossProfilesDetails.class.getName(),
             MediaControlsSettings.class.getName(),
+            VolumeSteps.class.getName(),
             NetworkProviderSettings.class.getName(),
             NetworkSelectSettings.class.getName(),
             AlarmsAndRemindersDetails.class.getName(),

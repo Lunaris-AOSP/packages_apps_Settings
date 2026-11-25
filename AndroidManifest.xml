@@ -27,6 +27,9 @@
         android:name="com.google.android.settings.biometrics.face.POSTURE_GUIDANCE"
         android:protectionLevel="privileged|signature"/>
 
+    <permission android:name="com.android.settings.permission.EXTRACT_WALLPAPER_SUBJECT"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="android.permission.REQUEST_NETWORK_SCORES" />
     <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
@@ -5404,7 +5407,7 @@
         <service
             android:name="org.lunaris.settings.utils.WallpaperSubjectExtractorService"
             android:exported="true"
-            android:permission="android.permission.WRITE_SECURE_SETTINGS" />
+            android:permission="com.android.settings.permission.EXTRACT_WALLPAPER_SUBJECT" />
 
         <activity
             android:name=".HelpTrampoline"

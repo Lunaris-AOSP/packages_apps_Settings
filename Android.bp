@@ -76,8 +76,6 @@ android_library {
         "Singularity/res",
     ],
 
-    asset_dirs: ["Singularity/assets"],
-
     optional_uses_libs: ["com.android.extensions.appfunctions"],
     static_libs: [
         // External dependencies
@@ -216,9 +214,6 @@ android_app {
     jni_libs: [
         "libtensorflowlite_jni",
         "libtensorflowlite_gpu_jni",
-    ],
-    aaptflags: [
-        "-0 .tflite",
     ],
     optimize: {
         proguard_flags_files: ["proguard.flags"],
